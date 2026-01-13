@@ -1,6 +1,7 @@
-node_modules
-dist
-.env
-.DS_Store
-coverage
-/generated/prisma
+# Inherits from root, but specific overrides if needed
+node_modules/
+dist/
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
