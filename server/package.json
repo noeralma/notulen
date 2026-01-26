@@ -21,7 +21,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "templatev2": "file:.."
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
