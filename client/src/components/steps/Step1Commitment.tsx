@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Info } from "lucide-react";
 import type { Step1Data } from "../../types/form";
+import { PROJECT_CONSTANTS } from "../../lib/constants";
 
 interface Props {
   data: Step1Data;
@@ -16,13 +17,7 @@ const Step1Commitment: React.FC<Props> = ({
 }) => {
   const [touched, setTouched] = useState(false);
 
-  const mandatoryFields = [
-    { key: "videoClsr", label: "Video CLSR" },
-    { key: "kebijakanHsse", label: "Kebijakan HSSE Perusahaan" },
-    { key: "komitmenHsse", label: "Komitmen HSSE" },
-    { key: "safetyContact", label: "Safety Contact" },
-    { key: "coreValueAkhlak", label: "Pembacaan Core Value BUMN Akhlak" },
-  ] as const;
+  const mandatoryFields = PROJECT_CONSTANTS.MANDATORY_FIELDS_STEP1;
 
   const isValid = mandatoryFields.every((field) => data[field.key]);
 

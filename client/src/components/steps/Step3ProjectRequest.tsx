@@ -1,0 +1,442 @@
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, AlertTriangle, CheckCircle2, User } from "lucide-react";
+import { type Step3Data, INITIAL_DATA } from "../../types/form";
+import { PROJECT_CONSTANTS } from "../../lib/constants";
+
+interface Step3Props {
+  data: Step3Data;
+  updateData: (data: Partial<Step3Data>) => void;
+  onValidityChange: (isValid: boolean) => void;
+}
+
+const Step3ProjectRequest: React.FC<Step3Props> = ({
+  data,
+  updateData,
+  onValidityChange,
+}) => {
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
+  const [isTouched, setIsTouched] = useState(false);
+
+  useEffect(() => {
+    validateStep();
+  }, [data]);
+
+  const validateStep = () => {
+    const isNameValid = data.nama === PROJECT_CONSTANTS.EXPECTED_NAME;
+    const isCreatedDateValid = !!data.createdDate;
+    const isApprovedDateValid = !!data.approvedDate;
+    const isProjectTypeValid = !!data.projectType;
+
+    let isDateOrderValid = true;
+    if (data.createdDate && data.approvedDate) {
+      if (new Date(data.approvedDate) < new Date(data.createdDate)) {
+        isDateOrderValid = false;
+        setDateError("Approved Date cannot be before Created Date");
+      } else {
+        setDateError(null);
+      }
+    } else {
+      setDateError(null);
+    }
+
+    // Update error state logic
+    if (data.nama && data.nama !== PROJECT_CONSTANTS.EXPECTED_NAME) {
+      setNameError("Input doesn't match");
+    } else {
+      setNameError(null);
+    }
+
+    const isLampiranValid =
+      !data.lampiran ||
+      Object.values(data.lampiran).every((item) => {
+        if (!item.isActive) return true;
+        return item.existence && item.suitability;
+      });
+
+    onValidityChange(
+      isNameValid &&
+        isCreatedDateValid &&
+        isApprovedDateValid &&
+        isDateOrderValid &&
+        isProjectTypeValid &&
+        isLampiranValid,
+    );
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateData({ nama: e.target.value });
+    setIsTouched(true);
+  };
+
+  const handleLampiranToggle = (key: string) => {
+    const currentLampiran = data.lampiran || INITIAL_DATA.step3.lampiran;
+    if (!currentLampiran) return;
+
+    updateData({
+      lampiran: {
+        ...currentLampiran,
+        [key]: {
+          ...currentLampiran[key],
+          isActive: !currentLampiran[key].isActive,
+          existence: null,
+          suitability: null,
+        },
+      },
+    });
+  };
+
+  const handleLampiranUpdate = (
+    key: string,
+    field: "existence" | "suitability",
+    value: string,
+  ) => {
+    const currentLampiran = data.lampiran || INITIAL_DATA.step3.lampiran;
+    if (!currentLampiran) return;
+
+    updateData({
+      lampiran: {
+        ...currentLampiran,
+        [key]: {
+          ...currentLampiran[key],
+          [field]: value,
+        },
+      },
+    });
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+      <div className="bg-blue-600 p-6 text-white">
+        <h2 className="text-2xl font-bold flex items-center gap-3">
+          DOKUMEN PENDUKUNG PELAKSANAAN PEMILIHAN (DP3)
+        </h2>
+        <p className="text-blue-100 mt-2">
+          Please provide the project details.
+        </p>
+      </div>
+
+      <div className="p-8 space-y-8">
+        {/* Section 1: Project Request Details */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
+            Section 1: Project Request
+          </h3>
+
+          {/* Project Type Selection */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-slate-700">
+              Project Type <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-6">
+              {PROJECT_CONSTANTS.PROJECT_TYPES.map((type) => (
+                <label
+                  key={type}
+                  className={`
+                    flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 w-full md:w-auto
+                    ${
+                      data.projectType === type
+                        ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
+                        : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"
+                    }
+                  `}
+                >
+                  <input
+                    type="radio"
+                    name="projectType"
+                    value={type}
+                    checked={data.projectType === type}
+                    onChange={(e) =>
+                      updateData({
+                        projectType: e.target.value as
+                          | "Baseline"
+                          | "Non-Baseline",
+                      })
+                    }
+                    className="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span
+                    className={`font-medium ${
+                      data.projectType === type
+                        ? "text-blue-700"
+                        : "text-slate-600"
+                    }`}
+                  >
+                    {type}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Nama Input */}
+          <div className="space-y-2">
+            <label
+              htmlFor="nama"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Nama <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-slate-400" />
+              </div>
+              <input
+                type="text"
+                id="nama"
+                value={data.nama}
+                onChange={handleNameChange}
+                className={`
+                  block w-full pl-10 pr-10 py-3 rounded-xl border-2 transition-colors duration-200
+                  focus:outline-none focus:ring-0
+                  ${
+                    data.nama === PROJECT_CONSTANTS.EXPECTED_NAME
+                      ? "border-green-500 bg-green-50 text-green-900"
+                      : nameError
+                        ? "border-red-300 bg-red-50 text-red-900 focus:border-red-500"
+                        : "border-slate-200 focus:border-blue-500 hover:border-blue-300"
+                  }
+                `}
+                placeholder="Enter input"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                {data.nama === PROJECT_CONSTANTS.EXPECTED_NAME ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                ) : nameError ? (
+                  <AlertTriangle className="h-5 w-5 text-red-500" />
+                ) : null}
+              </div>
+            </div>
+
+            {/* Validation Message */}
+            <div className="h-6">
+              <AnimatePresence>
+                {nameError && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-sm text-red-600 flex items-center gap-1"
+                  >
+                    <AlertTriangle className="w-3 h-3" />
+                    {nameError}
+                  </motion.p>
+                )}
+                {!nameError && !data.nama && isTouched && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-xs text-slate-400"
+                  >
+                    Required field must match
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Created Date */}
+            <div className="space-y-2">
+              <label
+                htmlFor="createdDate"
+                className="block text-sm font-medium text-slate-700"
+              >
+                Created Date <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="date"
+                  id="createdDate"
+                  value={data.createdDate}
+                  onChange={(e) => updateData({ createdDate: e.target.value })}
+                  className="block w-full pl-10 pr-3 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:outline-none transition-colors duration-200"
+                />
+              </div>
+            </div>
+
+            {/* Approved Date */}
+            <div className="space-y-2">
+              <label
+                htmlFor="approvedDate"
+                className="block text-sm font-medium text-slate-700"
+              >
+                Approved Date <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="date"
+                  id="approvedDate"
+                  value={data.approvedDate}
+                  onChange={(e) => updateData({ approvedDate: e.target.value })}
+                  className={`
+                    block w-full pl-10 pr-3 py-3 rounded-xl border-2 transition-colors duration-200 focus:outline-none
+                    ${
+                      dateError
+                        ? "border-red-300 focus:border-red-500 bg-red-50"
+                        : "border-slate-200 focus:border-blue-500"
+                    }
+                  `}
+                />
+              </div>
+              {dateError && (
+                <p className="text-sm text-red-600 mt-1">{dateError}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Lampiran DP3 */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
+            Section 2: Lampiran DP3
+          </h3>
+
+          <div className="space-y-4">
+            {PROJECT_CONSTANTS.LAMPIRAN_DOCUMENTS.map((doc) => {
+              const item = data.lampiran?.[doc.key] || {
+                isActive: false,
+                existence: null,
+                suitability: null,
+              };
+
+              return (
+                <div
+                  key={doc.key}
+                  className={`
+                    p-4 rounded-xl border-2 transition-all duration-200
+                    ${
+                      item.isActive
+                        ? "border-blue-200 bg-blue-50/50"
+                        : "border-slate-100 bg-slate-50"
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <div
+                        className={`
+                          w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
+                          ${
+                            item.isActive
+                              ? "bg-blue-600 border-blue-600"
+                              : "border-slate-300 bg-white"
+                          }
+                        `}
+                      >
+                        {item.isActive && (
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={item.isActive}
+                        onChange={() => handleLampiranToggle(doc.key)}
+                        className="hidden"
+                      />
+                      <span
+                        className={`font-medium ${
+                          item.isActive ? "text-slate-900" : "text-slate-500"
+                        }`}
+                      >
+                        {doc.label}
+                      </span>
+                    </label>
+                  </div>
+
+                  <AnimatePresence>
+                    {item.isActive && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                          {/* Existence */}
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-slate-600">
+                              Ketersediaan Dokumen
+                            </span>
+                            <div className="flex gap-4">
+                              {["Ada", "Tidak Ada"].map((opt) => (
+                                <label
+                                  key={opt}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`${doc.key}-existence`}
+                                    value={opt}
+                                    checked={item.existence === opt}
+                                    onChange={(e) =>
+                                      handleLampiranUpdate(
+                                        doc.key,
+                                        "existence",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="text-sm text-slate-700">
+                                    {opt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Suitability */}
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-slate-600">
+                              Kesesuaian Dokumen
+                            </span>
+                            <div className="flex gap-4">
+                              {["Sesuai", "Tidak Sesuai"].map((opt) => (
+                                <label
+                                  key={opt}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`${doc.key}-suitability`}
+                                    value={opt}
+                                    checked={item.suitability === opt}
+                                    onChange={(e) =>
+                                      handleLampiranUpdate(
+                                        doc.key,
+                                        "suitability",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="text-sm text-slate-700">
+                                    {opt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Step3ProjectRequest;

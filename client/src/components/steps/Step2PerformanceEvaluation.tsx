@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, AlertCircle } from "lucide-react";
 import type { Step2Data } from "../../types/form";
+import { PROJECT_CONSTANTS } from "../../lib/constants";
 
 interface Step2Props {
   data: Step2Data;
@@ -28,10 +29,10 @@ const Step2PerformanceEvaluation: React.FC<Step2Props> = ({
       {/* Header */}
       <div className="bg-blue-600 p-4 text-white">
         <h2 className="text-xl font-bold mb-1">
-          REMINDER EVALUASI KINERJA PENYEDIA
+          {PROJECT_CONSTANTS.STEP2_TEXT.TITLE}
         </h2>
         <p className="text-blue-100 opacity-90 text-sm">
-          Untuk Paket Pekerjaan Sebelumnya
+          {PROJECT_CONSTANTS.STEP2_TEXT.SUBTITLE}
         </p>
       </div>
 
@@ -41,9 +42,7 @@ const Step2PerformanceEvaluation: React.FC<Step2Props> = ({
           <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
             <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
             <p className="text-slate-700 leading-relaxed font-bold text-sm">
-              Procurement mengingatkan Pengguna agar dapat menyampaikan hasil
-              evaluasi kinerja penyedia dari paket-paket pekerjaan sebelumnya
-              yang telah selesai di GSLT.
+              {PROJECT_CONSTANTS.STEP2_TEXT.WARNING_TEXT}
             </p>
           </div>
         </div>
@@ -82,12 +81,12 @@ const Step2PerformanceEvaluation: React.FC<Step2Props> = ({
             <h3
               className={`font-semibold text-base ${data.performanceEvaluation ? "text-green-800" : "text-slate-700"}`}
             >
-              Saya Mengerti dan Setuju
+              {PROJECT_CONSTANTS.STEP2_TEXT.AGREEMENT_LABEL}
             </h3>
             <p
               className={`text-xs ${data.performanceEvaluation ? "text-green-600" : "text-slate-500"}`}
             >
-              Klik disini untuk menyetujui pernyataan diatas
+              {PROJECT_CONSTANTS.STEP2_TEXT.AGREEMENT_SUBTEXT}
             </p>
           </div>
         </motion.div>

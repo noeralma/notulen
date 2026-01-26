@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Save } from "lucide-react";
 import { INITIAL_DATA } from "../types/form";
-import type { FormData, Step1Data, Step2Data } from "../types/form";
+import type { FormData, Step1Data, Step2Data, Step3Data } from "../types/form";
+import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
 import Step2PerformanceEvaluation from "./steps/Step2PerformanceEvaluation";
+import Step3ProjectRequest from "./steps/Step3ProjectRequest";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
   const [isStepValid, setIsStepValid] = useState(false);
 
-  const totalSteps = 19;
+  const totalSteps = PROJECT_CONSTANTS.TOTAL_STEPS;
 
   const updateStep1Data = (data: Partial<Step1Data>) => {
     setFormData((prev) => ({
@@ -26,6 +28,23 @@ const FormWizard: React.FC = () => {
       step2: { ...prev.step2, ...data },
     }));
   };
+
+  const updateStep3Data = (data: Partial<Step3Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step3: { ...prev.step3, ...data },
+    }));
+  };
+
+  // Ensure step3 data exists (handling HMR or legacy state)
+  // We don't block render with null anymore, just initialize if missing
+  const currentStep3Data = formData.step3 ||
+    INITIAL_DATA.step3 || {
+      nama: "",
+      createdDate: "",
+      approvedDate: "",
+      projectType: "",
+    };
 
   const handleNext = () => {
     if (isStepValid && currentStep < totalSteps) {
@@ -56,6 +75,14 @@ const FormWizard: React.FC = () => {
           <Step2PerformanceEvaluation
             data={formData.step2}
             updateData={updateStep2Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 3:
+        return (
+          <Step3ProjectRequest
+            data={currentStep3Data}
+            updateData={updateStep3Data}
             onValidityChange={setIsStepValid}
           />
         );
