@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, AlertTriangle, CheckCircle2, User } from "lucide-react";
-import { type Step3Data, INITIAL_DATA } from "../../types/form";
+import {
+  Calendar,
+  AlertTriangle,
+  CheckCircle2,
+  User,
+} from "lucide-react";
+import {
+  type Step3Data,
+  type LampiranItem,
+  INITIAL_DATA,
+} from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 
 interface Step3Props {
@@ -70,18 +79,60 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
     setIsTouched(true);
   };
 
+  const getRowStatus = (item: LampiranItem) => {
+    // Normalization
+    const cVal = item.isActive ? "√" : "X";
+    const gVal =
+      item.existence === "Ada"
+        ? "√"
+        : item.existence === "Tidak Ada"
+          ? "X"
+          : "";
+    const jVal =
+      item.suitability === "Sesuai"
+        ? "√"
+        : item.suitability === "Tidak Sesuai"
+          ? "X"
+          : "";
+
+    // IF(OR(C35="",C35="-",G35="",G35="-",J35="",J35="-"),"", ...
+    if (!cVal || !gVal || !jVal) return "";
+
+    // IF(C35="X", IF(AND(G35="X",J35="√"),"Closed","ERROR"), ...
+    if (cVal === "X") {
+      if (gVal === "X" && jVal === "√") return "Closed";
+      return "ERROR";
+    }
+
+    // IF(AND(C35="√",G35="X"), IF(J35="X","Open","ERROR"), ...
+    if (cVal === "√" && gVal === "X") {
+      if (jVal === "X") return "Open";
+      return "ERROR";
+    }
+
+    // IF(AND(C35="√",G35="√",J35="√"),"Closed","Open")
+    if (cVal === "√" && gVal === "√" && jVal === "√") return "Closed";
+
+    // Default fallback for remaining C=√ cases (e.g. G=√, J=X)
+    return "Open";
+  };
+
   const handleLampiranToggle = (key: string) => {
     const currentLampiran = data.lampiran || INITIAL_DATA.step3.lampiran;
     if (!currentLampiran) return;
+
+    const newIsActive = !currentLampiran[key].isActive;
 
     updateData({
       lampiran: {
         ...currentLampiran,
         [key]: {
           ...currentLampiran[key],
-          isActive: !currentLampiran[key].isActive,
-          existence: null,
-          suitability: null,
+          isActive: newIsActive,
+          // If deactivating, set defaults to satisfy "Closed" status (G=X, J=√)
+          // If activating, reset to null to force user selection
+          existence: newIsActive ? null : "Tidak Ada",
+          suitability: newIsActive ? null : "Sesuai",
         },
       },
     });
@@ -307,6 +358,8 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                 suitability: null,
               };
 
+              const status = getRowStatus(item);
+
               return (
                 <div
                   key={doc.key}
@@ -349,6 +402,23 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                         {doc.label}
                       </span>
                     </label>
+
+                    {status && (
+                      <div
+                        className={`
+                          px-3 py-1 rounded-full text-xs font-bold border
+                          ${
+                            status === "Closed"
+                              ? "bg-green-100 text-green-700 border-green-200"
+                              : status === "Open"
+                              ? "bg-orange-100 text-orange-700 border-orange-200"
+                              : "bg-red-100 text-red-700 border-red-200"
+                          }
+                        `}
+                      >
+                        {status.toUpperCase()}
+                      </div>
+                    )}
                   </div>
 
                   <AnimatePresence>
