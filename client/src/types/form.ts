@@ -16,6 +16,7 @@ export interface LampiranItem {
   isActive: boolean;
   existence: "Ada" | "Tidak Ada" | null;
   suitability: "Sesuai" | "Tidak Sesuai" | null;
+  catatan?: string;
 }
 
 export interface Step3Data {
@@ -24,6 +25,8 @@ export interface Step3Data {
   approvedDate: string;
   projectType: "Baseline" | "Non-Baseline" | "";
   lampiran?: Record<string, LampiranItem>;
+  tkdn?: Record<string, LampiranItem>;
+  prMysap?: Record<string, LampiranItem>;
 }
 
 export interface FormData {
@@ -52,12 +55,96 @@ export const INITIAL_DATA: FormData = {
     approvedDate: "",
     projectType: "",
     lampiran: {
-      formulirRequest: { isActive: false, existence: null, suitability: null },
-      kakTor: { isActive: false, existence: null, suitability: null },
-      paktaIntegritas: { isActive: false, existence: null, suitability: null },
-      boq: { isActive: false, existence: null, suitability: null },
-      hps: { isActive: false, existence: null, suitability: null },
-      csms: { isActive: false, existence: null, suitability: null },
+      formulirRequest: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      kakTor: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      paktaIntegritas: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      boq: { isActive: false, existence: null, suitability: null, catatan: "" },
+      hps: { isActive: false, existence: null, suitability: null, catatan: "" },
+      csms: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+    tkdn: {
+      formA1: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      formA2: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      formMonitoringB1: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      rancanganKontrak: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      dokumenKpeTeknis: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      dokumenRfi: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+    prMysap: {
+      printout: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      screenshotApprovalPr: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      anggaran: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      persetujuanDirektur: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
     },
   },
 };

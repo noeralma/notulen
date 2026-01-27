@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Calendar,
-  AlertTriangle,
-  CheckCircle2,
-  User,
-} from "lucide-react";
+import { Calendar, AlertTriangle, CheckCircle2, User } from "lucide-react";
 import {
   type Step3Data,
   type LampiranItem,
@@ -29,50 +24,55 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
   const [isTouched, setIsTouched] = useState(false);
 
   useEffect(() => {
-    validateStep();
-  }, [data]);
+    const validateStep = () => {
+      const isNameValid = data.nama === PROJECT_CONSTANTS.EXPECTED_NAME;
+      const isCreatedDateValid = !!data.createdDate;
+      const isApprovedDateValid = !!data.approvedDate;
+      const isProjectTypeValid = !!data.projectType;
 
-  const validateStep = () => {
-    const isNameValid = data.nama === PROJECT_CONSTANTS.EXPECTED_NAME;
-    const isCreatedDateValid = !!data.createdDate;
-    const isApprovedDateValid = !!data.approvedDate;
-    const isProjectTypeValid = !!data.projectType;
-
-    let isDateOrderValid = true;
-    if (data.createdDate && data.approvedDate) {
-      if (new Date(data.approvedDate) < new Date(data.createdDate)) {
-        isDateOrderValid = false;
-        setDateError("Approved Date cannot be before Created Date");
+      let isDateOrderValid = true;
+      if (data.createdDate && data.approvedDate) {
+        if (new Date(data.approvedDate) < new Date(data.createdDate)) {
+          isDateOrderValid = false;
+          setDateError("Approved Date cannot be before Created Date");
+        } else {
+          setDateError(null);
+        }
       } else {
         setDateError(null);
       }
-    } else {
-      setDateError(null);
-    }
 
-    // Update error state logic
-    if (data.nama && data.nama !== PROJECT_CONSTANTS.EXPECTED_NAME) {
-      setNameError("Input doesn't match");
-    } else {
-      setNameError(null);
-    }
+      if (data.nama && data.nama !== PROJECT_CONSTANTS.EXPECTED_NAME) {
+        setNameError("Input doesn't match");
+      } else {
+        setNameError(null);
+      }
 
-    const isLampiranValid =
-      !data.lampiran ||
-      Object.values(data.lampiran).every((item) => {
-        if (!item.isActive) return true;
-        return item.existence && item.suitability;
-      });
+      const validateLampiranGroup = (group?: Record<string, LampiranItem>) => {
+        if (!group) return true;
+        return Object.values(group).every((item) => {
+          if (!item.isActive) return true;
+          return item.existence && item.suitability;
+        });
+      };
 
-    onValidityChange(
-      isNameValid &&
-        isCreatedDateValid &&
-        isApprovedDateValid &&
-        isDateOrderValid &&
-        isProjectTypeValid &&
-        isLampiranValid,
-    );
-  };
+      const isLampiranValid =
+        validateLampiranGroup(data.lampiran) &&
+        validateLampiranGroup(data.tkdn) &&
+        validateLampiranGroup(data.prMysap);
+
+      onValidityChange(
+        isNameValid &&
+          isCreatedDateValid &&
+          isApprovedDateValid &&
+          isDateOrderValid &&
+          isProjectTypeValid &&
+          isLampiranValid,
+      );
+    };
+
+    validateStep();
+  }, [data, onValidityChange]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateData({ nama: e.target.value });
@@ -140,7 +140,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
   const handleLampiranUpdate = (
     key: string,
-    field: "existence" | "suitability",
+    field: "existence" | "suitability" | "catatan",
     value: string,
   ) => {
     const currentLampiran = data.lampiran || INITIAL_DATA.step3.lampiran;
@@ -151,6 +151,82 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
         ...currentLampiran,
         [key]: {
           ...currentLampiran[key],
+          [field]: value,
+        },
+      },
+    });
+  };
+
+  const handleTkdnToggle = (key: string) => {
+    const currentTkdn = data.tkdn || INITIAL_DATA.step3.tkdn;
+    if (!currentTkdn) return;
+
+    const newIsActive = !currentTkdn[key].isActive;
+
+    updateData({
+      tkdn: {
+        ...currentTkdn,
+        [key]: {
+          ...currentTkdn[key],
+          isActive: newIsActive,
+          existence: newIsActive ? null : "Tidak Ada",
+          suitability: newIsActive ? null : "Sesuai",
+        },
+      },
+    });
+  };
+
+  const handleTkdnUpdate = (
+    key: string,
+    field: "existence" | "suitability" | "catatan",
+    value: string,
+  ) => {
+    const currentTkdn = data.tkdn || INITIAL_DATA.step3.tkdn;
+    if (!currentTkdn) return;
+
+    updateData({
+      tkdn: {
+        ...currentTkdn,
+        [key]: {
+          ...currentTkdn[key],
+          [field]: value,
+        },
+      },
+    });
+  };
+
+  const handlePrMysapToggle = (key: string) => {
+    const currentPrMysap = data.prMysap || INITIAL_DATA.step3.prMysap;
+    if (!currentPrMysap) return;
+
+    const newIsActive = !currentPrMysap[key].isActive;
+
+    updateData({
+      prMysap: {
+        ...currentPrMysap,
+        [key]: {
+          ...currentPrMysap[key],
+          isActive: newIsActive,
+          existence: newIsActive ? null : "Tidak Ada",
+          suitability: newIsActive ? null : "Sesuai",
+        },
+      },
+    });
+  };
+
+  const handlePrMysapUpdate = (
+    key: string,
+    field: "existence" | "suitability" | "catatan",
+    value: string,
+  ) => {
+    const currentPrMysap = data.prMysap || INITIAL_DATA.step3.prMysap;
+    if (!currentPrMysap) return;
+
+    updateData({
+      prMysap: {
+        ...currentPrMysap,
+        [key]: {
+          ...currentPrMysap[key],
           [field]: value,
         },
       },
@@ -169,10 +245,10 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
       </div>
 
       <div className="p-8 space-y-8">
-        {/* Section 1: Project Request Details */}
+        {/* Project Request Details */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
-            Section 1: Project Request
+            Project Request
           </h3>
 
           {/* Project Type Selection */}
@@ -344,10 +420,10 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
           </div>
         </div>
 
-        {/* Section 2: Lampiran DP3 */}
+        {/* Lampiran DP3 */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
-            Section 2: Lampiran DP3
+            Lampiran DP3
           </h3>
 
           <div className="space-y-4">
@@ -411,8 +487,8 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                             status === "Closed"
                               ? "bg-green-100 text-green-700 border-green-200"
                               : status === "Open"
-                              ? "bg-orange-100 text-orange-700 border-orange-200"
-                              : "bg-red-100 text-red-700 border-red-200"
+                                ? "bg-orange-100 text-orange-700 border-orange-200"
+                                : "bg-red-100 text-red-700 border-red-200"
                           }
                         `}
                       >
@@ -494,6 +570,402 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                          </div>
+                        </div>
+
+                        {/* Catatan */}
+                        <div className="pl-9 pt-4">
+                          <div className="space-y-2">
+                            <label
+                              htmlFor={`${doc.key}-catatan`}
+                              className="block text-sm font-medium text-slate-600"
+                            >
+                              Catatan
+                            </label>
+                            <input
+                              type="text"
+                              id={`${doc.key}-catatan`}
+                              value={item.catatan || ""}
+                              onChange={(e) =>
+                                handleLampiranUpdate(
+                                  doc.key,
+                                  "catatan",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="Tambahkan catatan..."
+                              className="block w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Formulir TKDN */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
+            Formulir TKDN
+          </h3>
+
+          <div className="space-y-4">
+            {PROJECT_CONSTANTS.TKDN_DOCUMENTS.map((doc) => {
+              const item = data.tkdn?.[doc.key] || {
+                isActive: false,
+                existence: null,
+                suitability: null,
+                catatan: "",
+              };
+
+              const status = getRowStatus(item);
+
+              return (
+                <div
+                  key={doc.key}
+                  className={`
+                    p-4 rounded-xl border-2 transition-all duration-200
+                    ${
+                      item.isActive
+                        ? "border-blue-200 bg-blue-50/50"
+                        : "border-slate-100 bg-slate-50"
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <div
+                        className={`
+                          w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
+                          ${
+                            item.isActive
+                              ? "bg-blue-600 border-blue-600"
+                              : "border-slate-300 bg-white"
+                          }
+                        `}
+                      >
+                        {item.isActive && (
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={item.isActive}
+                        onChange={() => handleTkdnToggle(doc.key)}
+                        className="hidden"
+                      />
+                      <span
+                        className={`font-medium ${
+                          item.isActive ? "text-slate-900" : "text-slate-500"
+                        }`}
+                      >
+                        {doc.label}
+                      </span>
+                    </label>
+
+                    {status && (
+                      <div
+                        className={`
+                          px-3 py-1 rounded-full text-xs font-bold border
+                          ${
+                            status === "Closed"
+                              ? "bg-green-100 text-green-700 border-green-200"
+                              : status === "Open"
+                                ? "bg-orange-100 text-orange-700 border-orange-200"
+                                : "bg-red-100 text-red-700 border-red-200"
+                          }
+                        `}
+                      >
+                        {status.toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+
+                  <AnimatePresence>
+                    {item.isActive && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-slate-600">
+                              Ketersediaan Dokumen
+                            </span>
+                            <div className="flex gap-4">
+                              {["Ada", "Tidak Ada"].map((opt) => (
+                                <label
+                                  key={opt}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`${doc.key}-existence`}
+                                    value={opt}
+                                    checked={item.existence === opt}
+                                    onChange={(e) =>
+                                      handleTkdnUpdate(
+                                        doc.key,
+                                        "existence",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="text-sm text-slate-700">
+                                    {opt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-slate-600">
+                              Kesesuaian Dokumen
+                            </span>
+                            <div className="flex gap-4">
+                              {["Sesuai", "Tidak Sesuai"].map((opt) => (
+                                <label
+                                  key={opt}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`${doc.key}-suitability`}
+                                    value={opt}
+                                    checked={item.suitability === opt}
+                                    onChange={(e) =>
+                                      handleTkdnUpdate(
+                                        doc.key,
+                                        "suitability",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="text-sm text-slate-700">
+                                    {opt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pl-9 pt-4">
+                          <div className="space-y-2">
+                            <label
+                              htmlFor={`${doc.key}-catatan`}
+                              className="block text-sm font-medium text-slate-600"
+                            >
+                              Catatan
+                            </label>
+                            <input
+                              type="text"
+                              id={`${doc.key}-catatan`}
+                              value={item.catatan || ""}
+                              onChange={(e) =>
+                                handleTkdnUpdate(
+                                  doc.key,
+                                  "catatan",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="Tambahkan catatan..."
+                              className="block w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* PR di MySAP */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
+            PR di MySAP
+          </h3>
+
+          <div className="space-y-4">
+            {PROJECT_CONSTANTS.PR_MYSAP_DOCUMENTS.map((doc) => {
+              const item = data.prMysap?.[doc.key] || {
+                isActive: false,
+                existence: null,
+                suitability: null,
+                catatan: "",
+              };
+
+              const status = getRowStatus(item);
+
+              return (
+                <div
+                  key={doc.key}
+                  className={`
+                    p-4 rounded-xl border-2 transition-all duration-200
+                    ${
+                      item.isActive
+                        ? "border-blue-200 bg-blue-50/50"
+                        : "border-slate-100 bg-slate-50"
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <div
+                        className={`
+                          w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
+                          ${
+                            item.isActive
+                              ? "bg-blue-600 border-blue-600"
+                              : "border-slate-300 bg-white"
+                          }
+                        `}
+                      >
+                        {item.isActive && (
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={item.isActive}
+                        onChange={() => handlePrMysapToggle(doc.key)}
+                        className="hidden"
+                      />
+                      <span
+                        className={`font-medium ${
+                          item.isActive ? "text-slate-900" : "text-slate-500"
+                        }`}
+                      >
+                        {doc.label}
+                      </span>
+                    </label>
+
+                    {status && (
+                      <div
+                        className={`
+                          px-3 py-1 rounded-full text-xs font-bold border
+                          ${
+                            status === "Closed"
+                              ? "bg-green-100 text-green-700 border-green-200"
+                              : status === "Open"
+                                ? "bg-orange-100 text-orange-700 border-orange-200"
+                                : "bg-red-100 text-red-700 border-red-200"
+                          }
+                        `}
+                      >
+                        {status.toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+
+                  <AnimatePresence>
+                    {item.isActive && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-slate-600">
+                              Ketersediaan Dokumen
+                            </span>
+                            <div className="flex gap-4">
+                              {["Ada", "Tidak Ada"].map((opt) => (
+                                <label
+                                  key={opt}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`${doc.key}-existence`}
+                                    value={opt}
+                                    checked={item.existence === opt}
+                                    onChange={(e) =>
+                                      handlePrMysapUpdate(
+                                        doc.key,
+                                        "existence",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="text-sm text-slate-700">
+                                    {opt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-sm font-medium text-slate-600">
+                              Kesesuaian Dokumen
+                            </span>
+                            <div className="flex gap-4">
+                              {["Sesuai", "Tidak Sesuai"].map((opt) => (
+                                <label
+                                  key={opt}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`${doc.key}-suitability`}
+                                    value={opt}
+                                    checked={item.suitability === opt}
+                                    onChange={(e) =>
+                                      handlePrMysapUpdate(
+                                        doc.key,
+                                        "suitability",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span className="text-sm text-slate-700">
+                                    {opt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pl-9 pt-4">
+                          <div className="space-y-2">
+                            <label
+                              htmlFor={`${doc.key}-catatan`}
+                              className="block text-sm font-medium text-slate-600"
+                            >
+                              Catatan
+                            </label>
+                            <input
+                              type="text"
+                              id={`${doc.key}-catatan`}
+                              value={item.catatan || ""}
+                              onChange={(e) =>
+                                handlePrMysapUpdate(
+                                  doc.key,
+                                  "catatan",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="Tambahkan catatan..."
+                              className="block w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm"
+                            />
                           </div>
                         </div>
                       </motion.div>
