@@ -29,10 +29,18 @@ export interface Step3Data {
   prMysap?: Record<string, LampiranItem>;
 }
 
+export interface Step4Data {
+  judulPaket: string;
+  penggunaBarangJasa: "GM" | "GH" | "DH" | "Others" | "";
+  picPenggunaBarangJasa: string;
+  penggunaBarangJasaNotes: string;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
   step3: Step3Data;
+  step4: Step4Data;
   // Will add other steps here later
 }
 
@@ -146,5 +154,11 @@ export const INITIAL_DATA: FormData = {
         catatan: "",
       },
     },
+  },
+  step4: {
+    judulPaket: "",
+    penggunaBarangJasa: "",
+    picPenggunaBarangJasa: "",
+    penggunaBarangJasaNotes: "",
   },
 };

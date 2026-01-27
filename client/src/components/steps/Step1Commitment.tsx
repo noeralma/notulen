@@ -35,20 +35,17 @@ const Step1Commitment: React.FC<Props> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-6"
-    >
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <h2 className="text-xl font-bold text-slate-800 mb-1">
+    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+      <div className="bg-blue-600 p-4 text-white">
+        <h2 className="text-xl font-bold mb-1">
           Komitmen HSSE dan Budaya AKHLAK
         </h2>
-        <p className="text-slate-500 mb-4 text-sm">
+        <p className="text-blue-100 opacity-90 text-sm">
           Silakan konfirmasi pelaksanaan item-item berikut sebelum melanjutkan.
         </p>
+      </div>
 
+      <div className="p-5">
         <div className="space-y-2">
           {mandatoryFields.map((field, index) => (
             <motion.div
@@ -150,7 +147,7 @@ const Step1Commitment: React.FC<Props> = ({
           </motion.div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

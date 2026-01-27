@@ -15,7 +15,6 @@ const Step2PerformanceEvaluation: React.FC<Step2Props> = ({
   updateData,
   onValidityChange,
 }) => {
-  // Validate immediately when component mounts or data changes
   useEffect(() => {
     onValidityChange(data.performanceEvaluation);
   }, [data.performanceEvaluation, onValidityChange]);
@@ -47,7 +46,6 @@ const Step2PerformanceEvaluation: React.FC<Step2Props> = ({
           </div>
         </div>
 
-        {/* Agreement Checkbox */}
         <motion.div
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
@@ -90,6 +88,7 @@ const Step2PerformanceEvaluation: React.FC<Step2Props> = ({
             </p>
           </div>
         </motion.div>
+
       </div>
     </div>
   );

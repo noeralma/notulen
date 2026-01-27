@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Save } from "lucide-react";
 import { INITIAL_DATA } from "../types/form";
-import type { FormData, Step1Data, Step2Data, Step3Data } from "../types/form";
+import type {
+  FormData,
+  Step1Data,
+  Step2Data,
+  Step3Data,
+  Step4Data,
+} from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
 import Step2PerformanceEvaluation from "./steps/Step2PerformanceEvaluation";
 import Step3ProjectRequest from "./steps/Step3ProjectRequest";
+import Step4General from "./steps/Step4General";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -36,6 +43,13 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep4Data = (data: Partial<Step4Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step4: { ...prev.step4, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -44,6 +58,13 @@ const FormWizard: React.FC = () => {
       createdDate: "",
       approvedDate: "",
       projectType: "",
+    };
+
+  const currentStep4Data = formData.step4 ||
+    INITIAL_DATA.step4 || {
+      judulPaket: "",
+      penggunaBarangJasa: "",
+      picPenggunaBarangJasa: "",
     };
 
   const handleNext = () => {
@@ -83,6 +104,14 @@ const FormWizard: React.FC = () => {
           <Step3ProjectRequest
             data={currentStep3Data}
             updateData={updateStep3Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 4:
+        return (
+          <Step4General
+            data={currentStep4Data}
+            updateData={updateStep4Data}
             onValidityChange={setIsStepValid}
           />
         );

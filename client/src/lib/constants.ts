@@ -46,4 +46,7 @@ export const PROJECT_CONSTANTS = {
       label: "Persetujuan Direktur terkait: Pengadaan Jasa Konsultansi",
     },
   ] as const,
+  STEP4_CONSTANTS: {
+    PENGGUNA_BARANG_JASA_OPTIONS: ["GM", "GH", "DH", "Others"] as const,
+  },
 };

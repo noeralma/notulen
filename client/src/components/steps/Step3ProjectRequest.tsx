@@ -234,17 +234,17 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-      <div className="bg-blue-600 p-6 text-white">
-        <h2 className="text-2xl font-bold flex items-center gap-3">
+    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+      <div className="bg-blue-600 p-4 text-white">
+        <h2 className="text-xl font-bold mb-1">
           DOKUMEN PENDUKUNG PELAKSANAAN PEMILIHAN (DP3)
         </h2>
-        <p className="text-blue-100 mt-2">
+        <p className="text-blue-100 opacity-90 text-sm">
           Please provide the project details.
         </p>
       </div>
 
-      <div className="p-8 space-y-8">
+      <div className="p-5 space-y-8">
         {/* Project Request Details */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
