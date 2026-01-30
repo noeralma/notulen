@@ -39,14 +39,14 @@ const Step10CommercialEvaluation: React.FC<Step10Props> = ({
       item.existence === "Ada"
         ? "√"
         : item.existence === "Tidak Ada"
-        ? "X"
-        : "";
+          ? "X"
+          : "";
     const jVal =
       item.suitability === "Sesuai"
         ? "√"
         : item.suitability === "Tidak Sesuai"
-        ? "X"
-        : "";
+          ? "X"
+          : "";
 
     if (!cVal || !gVal || !jVal) return "";
 
@@ -106,15 +106,21 @@ const Step10CommercialEvaluation: React.FC<Step10Props> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
-          <h2 className="text-xl font-bold text-slate-800">
-            {PROJECT_CONSTANTS.STEP10_TEXT.TITLE}
-          </h2>
-        </div>
+    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+      <div className="bg-blue-600 p-4 text-white">
+        <h2 className="text-xl font-bold mb-1">
+          {PROJECT_CONSTANTS.STEP10_TEXT.TITLE}
+        </h2>
+        <p className="text-blue-100 opacity-90 text-sm">
+          Evaluasi aspek komersial dan kewajaran harga.
+        </p>
+      </div>
 
-        <div className="p-6">
+      <div className="p-5 space-y-8">
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
+            Dokumen Evaluasi Komersial
+          </h3>
           <div className="space-y-4">
             {PROJECT_CONSTANTS.STEP10_DOCUMENTS.map((doc) => {
               const item = data.commercialDocuments?.[doc.key] ||
@@ -163,31 +169,29 @@ const Step10CommercialEvaluation: React.FC<Step10Props> = ({
                       />
                       <span
                         className={`font-medium ${
-                          item.isActive ? "text-blue-900" : "text-slate-600"
+                          item.isActive ? "text-slate-900" : "text-slate-500"
                         }`}
                       >
                         {doc.label}
                       </span>
                     </label>
 
-                    <div className="flex items-center gap-4">
-                      {status && (
-                        <span
-                          className={`
-                            px-3 py-1 rounded-full text-xs font-semibold
-                            ${
-                              status === "Closed"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : status === "Open"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-red-100 text-red-700"
-                            }
-                          `}
-                        >
-                          {status}
-                        </span>
-                      )}
-                    </div>
+                    {status && (
+                      <div
+                        className={`
+                          px-3 py-1 rounded-full text-xs font-bold border
+                          ${
+                            status === "Closed"
+                              ? "bg-green-100 text-green-700 border-green-200"
+                              : status === "Open"
+                                ? "bg-blue-100 text-blue-700 border-blue-200"
+                                : "bg-red-100 text-red-700 border-red-200"
+                          }
+                        `}
+                      >
+                        {status}
+                      </div>
+                    )}
                   </div>
 
                   <AnimatePresence>

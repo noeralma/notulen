@@ -82,6 +82,29 @@ export interface Step11Data {
   contractDocuments?: Record<string, LampiranItem>;
 }
 
+export interface KeabsahanHpsData {
+  isActive: boolean;
+  angkaDanPenyebutan: {
+    existence: "Ada" | "Tidak Ada" | null;
+    suitability: "Sesuai" | "Tidak Sesuai" | null;
+    catatan?: string;
+  };
+  dasarPembuatan: string;
+  penandatangan: string;
+  nilaiHps: "Termasuk PPN" | "Belum Termasuk PPN" | null;
+  mataUang: "USD" | "IDR" | "Other" | null;
+  mataUangOther?: string;
+}
+
+export interface Step12Data {
+  hpsDocuments?: Record<string, LampiranItem>;
+  keabsahanHps: KeabsahanHpsData;
+}
+
+export interface Step13Data {
+  mySapDocuments?: Record<string, LampiranItem>;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
@@ -94,6 +117,8 @@ export interface FormData {
   step9: Step9Data;
   step10: Step10Data;
   step11: Step11Data;
+  step12: Step12Data;
+  step13: Step13Data;
   // Will add other steps here later
 }
 
@@ -467,6 +492,57 @@ export const INITIAL_DATA: FormData = {
         catatan: "",
       },
       draftKontrak: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step12: {
+    hpsDocuments: {
+      dokumenDanSifatHps: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      rincianHps: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      boqTanpaHarga: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+    keabsahanHps: {
+      isActive: false,
+      angkaDanPenyebutan: {
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      dasarPembuatan: "",
+      penandatangan: "",
+      nilaiHps: null,
+      mataUang: null,
+      mataUangOther: "",
+    },
+  },
+  step13: {
+    mySapDocuments: {
+      printOutPr: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      screenshotApprovalPr: {
         isActive: false,
         existence: null,
         suitability: null,

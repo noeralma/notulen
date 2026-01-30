@@ -15,6 +15,8 @@ import type {
   Step9Data,
   Step10Data,
   Step11Data,
+  Step12Data,
+  Step13Data,
 } from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
@@ -28,6 +30,8 @@ import Step8SpecialQualification from "./steps/Step8SpecialQualification";
 import Step9TechnicalEvaluation from "./steps/Step9TechnicalEvaluation";
 import Step10CommercialEvaluation from "./steps/Step10CommercialEvaluation";
 import Step11ContractDraft from "./steps/Step11ContractDraft";
+import Step12HPS from "./steps/Step12HPS";
+import Step13MySAP from "./steps/Step13MySAP";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -113,6 +117,20 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep12Data = (data: Partial<Step12Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step12: { ...prev.step12, ...data },
+    }));
+  };
+
+  const updateStep13Data = (data: Partial<Step13Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step13: { ...prev.step13, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -137,6 +155,8 @@ const FormWizard: React.FC = () => {
   const currentStep9Data = formData.step9 || INITIAL_DATA.step9 || {};
   const currentStep10Data = formData.step10 || INITIAL_DATA.step10 || {};
   const currentStep11Data = formData.step11 || INITIAL_DATA.step11 || {};
+  const currentStep12Data = formData.step12 || INITIAL_DATA.step12 || {};
+  const currentStep13Data = formData.step13 || INITIAL_DATA.step13 || {};
 
   const handleNext = () => {
     if (isStepValid && currentStep < totalSteps) {
@@ -239,6 +259,22 @@ const FormWizard: React.FC = () => {
           <Step11ContractDraft
             data={currentStep11Data}
             updateData={updateStep11Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 12:
+        return (
+          <Step12HPS
+            data={currentStep12Data}
+            updateData={updateStep12Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 13:
+        return (
+          <Step13MySAP
+            data={currentStep13Data}
+            updateData={updateStep13Data}
             onValidityChange={setIsStepValid}
           />
         );

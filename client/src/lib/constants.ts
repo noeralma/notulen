@@ -173,5 +173,28 @@ export const PROJECT_CONSTANTS = {
     { key: "jenisKontrak", label: "Jenis Kontrak" },
     { key: "draftKontrak", label: "Draft Kontrak" },
   ] as const,
+  STEP12_TEXT: {
+    TITLE: "HPS, RINCIAN HPS, BOQ",
+  },
+  STEP12_DOCUMENTS_TOP: [
+    { key: "dokumenDanSifatHps", label: "Dokumen dan Sifat HPS" },
+  ] as const,
+  STEP12_DOCUMENTS_BOTTOM: [
+    { key: "rincianHps", label: "Rincian HPS" },
+    { key: "boqTanpaHarga", label: "BoQ (tanpa harga)" },
+  ] as const,
+  STEP12_CONSTANTS: {
+    KEABSAHAN_OPTIONS: {
+      NILAI_HPS: ["Termasuk PPN", "Belum Termasuk PPN"],
+      MATA_UANG: ["USD", "IDR", "Other"],
+    } as const,
+  },
+  STEP13_TEXT: {
+    TITLE: "FORMULIR MYSAP",
+  },
+  STEP13_DOCUMENTS: [
+    { key: "printOutPr", label: "Print Out PR" },
+    { key: "screenshotApprovalPr", label: "Screenshot Approval PR" },
+  ],
   PROJECT_CONSTANTS_END: true,
 };

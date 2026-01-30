@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, StickyNote } from "lucide-react";
 import { ValidatedInput } from "../ui/ValidatedInput";
 import {
-  type Step8Data,
+  type Step13Data,
   type LampiranItem,
   INITIAL_DATA,
 } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 
-interface Step8Props {
-  data: Step8Data;
-  updateData: (data: Partial<Step8Data>) => void;
+interface Step13Props {
+  data: Step13Data;
+  updateData: (data: Partial<Step13Data>) => void;
   onValidityChange: (isValid: boolean) => void;
 }
 
-const Step8SpecialQualification: React.FC<Step8Props> = ({
+const Step13MySAP: React.FC<Step13Props> = ({
   data,
   updateData,
   onValidityChange,
@@ -29,9 +29,9 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
       });
     };
 
-    const isValid = validateDocuments(data.qualificationDocuments);
-    onValidityChange(isValid);
-  }, [data.qualificationDocuments, onValidityChange]);
+    const isDocsValid = validateDocuments(data.mySapDocuments);
+    onValidityChange(isDocsValid);
+  }, [data.mySapDocuments, onValidityChange]);
 
   const getRowStatus = (item: LampiranItem) => {
     const cVal = item.isActive ? "√" : "X";
@@ -39,14 +39,14 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
       item.existence === "Ada"
         ? "√"
         : item.existence === "Tidak Ada"
-        ? "X"
-        : "";
+          ? "X"
+          : "";
     const jVal =
       item.suitability === "Sesuai"
         ? "√"
         : item.suitability === "Tidak Sesuai"
-        ? "X"
-        : "";
+          ? "X"
+          : "";
 
     if (!cVal || !gVal || !jVal) return "";
 
@@ -70,12 +70,11 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
     field: "existence" | "suitability" | "catatan",
     value: string,
   ) => {
-    const currentDocs =
-      data.qualificationDocuments || INITIAL_DATA.step8.qualificationDocuments;
+    const currentDocs = data.mySapDocuments || INITIAL_DATA.step13.mySapDocuments;
     if (!currentDocs) return;
 
     updateData({
-      qualificationDocuments: {
+      mySapDocuments: {
         ...currentDocs,
         [key]: {
           ...currentDocs[key],
@@ -86,14 +85,13 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
   };
 
   const handleToggle = (key: string) => {
-    const currentDocs =
-      data.qualificationDocuments || INITIAL_DATA.step8.qualificationDocuments;
+    const currentDocs = data.mySapDocuments || INITIAL_DATA.step13.mySapDocuments;
     if (!currentDocs) return;
 
     const newIsActive = !currentDocs[key].isActive;
 
     updateData({
-      qualificationDocuments: {
+      mySapDocuments: {
         ...currentDocs,
         [key]: {
           ...currentDocs[key],
@@ -109,22 +107,19 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
       <div className="bg-blue-600 p-4 text-white">
         <h2 className="text-xl font-bold mb-1">
-          {PROJECT_CONSTANTS.STEP8_TEXT.TITLE}
+          {PROJECT_CONSTANTS.STEP13_TEXT.TITLE}
         </h2>
         <p className="text-blue-100 opacity-90 text-sm">
-          Evaluasi kualifikasi khusus (jika dipersyaratkan).
+          Kelengkapan dokumen formulir MySAP.
         </p>
       </div>
 
       <div className="p-5 space-y-8">
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
-            Dokumen Kualifikasi Khusus
-          </h3>
           <div className="space-y-4">
-            {PROJECT_CONSTANTS.STEP8_DOCUMENTS.map((doc) => {
-              const item = data.qualificationDocuments?.[doc.key] ||
-                INITIAL_DATA.step8.qualificationDocuments?.[doc.key] || {
+            {PROJECT_CONSTANTS.STEP13_DOCUMENTS.map((doc) => {
+              const item = data.mySapDocuments?.[doc.key] ||
+                INITIAL_DATA.step13.mySapDocuments?.[doc.key] || {
                   isActive: false,
                   existence: null,
                   suitability: null,
@@ -184,8 +179,8 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
                             status === "Closed"
                               ? "bg-green-100 text-green-700 border-green-200"
                               : status === "Open"
-                              ? "bg-blue-100 text-blue-700 border-blue-200"
-                              : "bg-red-100 text-red-700 border-red-200"
+                                ? "bg-blue-100 text-blue-700 border-blue-200"
+                                : "bg-red-100 text-red-700 border-red-200"
                           }
                         `}
                       >
@@ -299,4 +294,4 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
   );
 };
 
-export default Step8SpecialQualification;
+export default Step13MySAP;

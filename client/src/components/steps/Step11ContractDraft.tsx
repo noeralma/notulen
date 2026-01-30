@@ -262,31 +262,37 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
         content={modalContent}
       />
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
-          <h2 className="text-xl font-bold text-slate-800">
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+        <div className="bg-blue-600 p-4 text-white">
+          <h2 className="text-xl font-bold mb-1">
             {PROJECT_CONSTANTS.STEP11_TEXT.TITLE}
           </h2>
+          <p className="text-blue-100 opacity-90 text-sm">
+            Drafting dan finalisasi kontrak.
+          </p>
         </div>
 
-        <div className="p-6 space-y-6">
-          {/* Document List Section */}
-          <div className="space-y-4">
-            {PROJECT_CONSTANTS.STEP11_DOCUMENTS.map((doc) => {
-              const item = data.contractDocuments?.[doc.key] ||
-                INITIAL_DATA.step11.contractDocuments?.[doc.key] || {
-                  isActive: false,
-                  existence: null,
-                  suitability: null,
-                  catatan: "",
-                };
+        <div className="p-5 space-y-8">
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
+              Dokumen Kontrak
+            </h3>
+            <div className="space-y-4">
+              {PROJECT_CONSTANTS.STEP11_DOCUMENTS.map((doc) => {
+                const item = data.contractDocuments?.[doc.key] ||
+                  INITIAL_DATA.step11.contractDocuments?.[doc.key] || {
+                    isActive: false,
+                    existence: null,
+                    suitability: null,
+                    catatan: "",
+                  };
 
-              const status = getRowStatus(doc.key, item);
+                const status = getRowStatus(doc.key, item);
 
-              return (
-                <div
-                  key={doc.key}
-                  className={`
+                return (
+                  <div
+                    key={doc.key}
+                    className={`
                       p-4 rounded-xl border-2 transition-all duration-200
                       ${
                         item.isActive
@@ -294,11 +300,11 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                           : "border-slate-100 bg-slate-50"
                       }
                     `}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <div
-                        className={`
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <div
+                          className={`
                             w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
                             ${
                               item.isActive
@@ -306,73 +312,71 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                 : "border-slate-300 bg-white"
                             }
                           `}
-                      >
-                        {item.isActive && (
-                          <CheckCircle2 className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                      <input
-                        type="checkbox"
-                        className="hidden"
-                        checked={item.isActive}
-                        onChange={() => handleToggle(doc.key)}
-                      />
-                      <span
-                        className={`font-medium ${
-                          item.isActive ? "text-blue-900" : "text-slate-600"
-                        }`}
-                      >
-                        {doc.label}
-                      </span>
-                    </label>
-
-                    <div className="flex items-center gap-4">
-                      {status && (
+                        >
+                          {item.isActive && (
+                            <CheckCircle2 className="w-4 h-4 text-white" />
+                          )}
+                        </div>
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={item.isActive}
+                          onChange={() => handleToggle(doc.key)}
+                        />
                         <span
+                          className={`font-medium ${
+                            item.isActive ? "text-slate-900" : "text-slate-500"
+                          }`}
+                        >
+                          {doc.label}
+                        </span>
+                      </label>
+
+                      {status && (
+                        <div
                           className={`
-                              px-3 py-1 rounded-full text-xs font-semibold
-                              ${
-                                status === "Closed"
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : status === "Open"
-                                    ? "bg-blue-100 text-blue-700"
-                                    : "bg-red-100 text-red-700"
-                              }
-                            `}
+                            px-3 py-1 rounded-full text-xs font-bold border
+                            ${
+                              status === "Closed"
+                                ? "bg-green-100 text-green-700 border-green-200"
+                                : status === "Open"
+                                  ? "bg-blue-100 text-blue-700 border-blue-200"
+                                  : "bg-red-100 text-red-700 border-red-200"
+                            }
+                          `}
                         >
                           {status}
-                        </span>
+                        </div>
                       )}
                     </div>
-                  </div>
 
-                  <AnimatePresence>
-                    {item.isActive && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="space-y-4 pt-2 border-t border-slate-200/60"
-                      >
-                        {doc.key === "jenisKontrak" && (
-                          <div className="mb-6 p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
-                            <label className="text-sm font-semibold text-slate-700 block mb-3">
-                              Pilih Jenis Kontrak
-                            </label>
-                            <div className="grid grid-cols-1 gap-3">
-                              {PROJECT_CONSTANTS.STEP11_CONSTANTS.JENIS_KONTRAK_OPTIONS.map(
-                                (option) => {
-                                  const hasInfo =
-                                    option === "Lumsum" ||
-                                    option === "Harga Satuan" ||
-                                    option ===
-                                      "Gabungan: Harga Satuan & Lumsum";
+                    <AnimatePresence>
+                      {item.isActive && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="space-y-4 pt-2 border-t border-slate-200/60"
+                        >
+                          {doc.key === "jenisKontrak" && (
+                            <div className="mb-6 p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                              <label className="text-sm font-semibold text-slate-700 block mb-3">
+                                Pilih Jenis Kontrak
+                              </label>
+                              <div className="grid grid-cols-1 gap-3">
+                                {PROJECT_CONSTANTS.STEP11_CONSTANTS.JENIS_KONTRAK_OPTIONS.map(
+                                  (option) => {
+                                    const hasInfo =
+                                      option === "Lumsum" ||
+                                      option === "Harga Satuan" ||
+                                      option ===
+                                        "Gabungan: Harga Satuan & Lumsum";
 
-                                  return (
-                                    <div
-                                      key={option}
-                                      onClick={() => handleSelection(option)}
-                                      className={`
+                                    return (
+                                      <div
+                                        key={option}
+                                        onClick={() => handleSelection(option)}
+                                        className={`
                                           relative flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200
                                           ${
                                             data.jenisKontrak === option
@@ -380,10 +384,10 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                               : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"
                                           }
                                         `}
-                                    >
-                                      <div className="flex items-center gap-3">
-                                        <div
-                                          className={`
+                                      >
+                                        <div className="flex items-center gap-3">
+                                          <div
+                                            className={`
                                               w-5 h-5 rounded-full border-2 flex items-center justify-center
                                               ${
                                                 data.jenisKontrak === option
@@ -391,156 +395,159 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                                   : "border-slate-300"
                                               }
                                             `}
-                                        >
-                                          {data.jenisKontrak === option && (
-                                            <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                                          )}
+                                          >
+                                            {data.jenisKontrak === option && (
+                                              <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                                            )}
+                                          </div>
+                                          <span
+                                            className={`font-medium ${
+                                              data.jenisKontrak === option
+                                                ? "text-blue-900"
+                                                : "text-slate-700"
+                                            }`}
+                                          >
+                                            {option}
+                                          </span>
                                         </div>
-                                        <span
-                                          className={`font-medium ${
-                                            data.jenisKontrak === option
-                                              ? "text-blue-900"
-                                              : "text-slate-700"
-                                          }`}
-                                        >
-                                          {option}
-                                        </span>
+
+                                        {hasInfo && (
+                                          <button
+                                            onClick={(e) => showInfo(e, option)}
+                                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                            title="Lihat Keterangan"
+                                          >
+                                            <Info className="w-5 h-5" />
+                                          </button>
+                                        )}
                                       </div>
-
-                                      {hasInfo && (
-                                        <button
-                                          onClick={(e) => showInfo(e, option)}
-                                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                                          title="Lihat Keterangan"
-                                        >
-                                          <Info className="w-5 h-5" />
-                                        </button>
-                                      )}
+                                    );
+                                  },
+                                )}
+                              </div>
+                              <AnimatePresence>
+                                {data.jenisKontrak === "Others" && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="pt-2">
+                                      <ValidatedInput
+                                        id="others-description"
+                                        label="Keterangan Lainnya"
+                                        value={data.othersDescription || ""}
+                                        onChange={(e) =>
+                                          updateData({
+                                            othersDescription: e.target.value,
+                                          })
+                                        }
+                                        placeholder="Sebutkan jenis kontrak lainnya..."
+                                        icon={FileText}
+                                        required={
+                                          data.jenisKontrak === "Others"
+                                        }
+                                      />
                                     </div>
-                                  );
-                                },
-                              )}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
-                            <AnimatePresence>
-                              {data.jenisKontrak === "Others" && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  className="overflow-hidden"
-                                >
-                                  <div className="pt-2">
-                                    <ValidatedInput
-                                      id="others-description"
-                                      label="Keterangan Lainnya"
-                                      value={data.othersDescription || ""}
-                                      onChange={(e) =>
-                                        updateData({
-                                          othersDescription: e.target.value,
-                                        })
-                                      }
-                                      placeholder="Sebutkan jenis kontrak lainnya..."
-                                      icon={FileText}
-                                      required={data.jenisKontrak === "Others"}
-                                    />
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        )}
-                        {doc.key !== "jenisKontrak" && (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Keberadaan Dokumen */}
-                            <div className="space-y-2">
-                              <span className="text-sm font-medium text-slate-600">
-                                Keberadaan Dokumen
-                              </span>
-                              <div className="flex gap-4">
-                                {["Ada", "Tidak Ada"].map((opt) => (
-                                  <label
-                                    key={opt}
-                                    className="flex items-center gap-2 cursor-pointer"
-                                  >
-                                    <input
-                                      type="radio"
-                                      name={`${doc.key}-existence`}
-                                      value={opt}
-                                      checked={item.existence === opt}
-                                      onChange={(e) =>
-                                        handleDocumentUpdate(
-                                          doc.key,
-                                          "existence",
-                                          e.target.value,
-                                        )
-                                      }
-                                      className="text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span className="text-sm text-slate-700">
-                                      {opt}
-                                    </span>
-                                  </label>
-                                ))}
+                          )}
+                          {doc.key !== "jenisKontrak" && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Keberadaan Dokumen */}
+                              <div className="space-y-2">
+                                <span className="text-sm font-medium text-slate-600">
+                                  Keberadaan Dokumen
+                                </span>
+                                <div className="flex gap-4">
+                                  {["Ada", "Tidak Ada"].map((opt) => (
+                                    <label
+                                      key={opt}
+                                      className="flex items-center gap-2 cursor-pointer"
+                                    >
+                                      <input
+                                        type="radio"
+                                        name={`${doc.key}-existence`}
+                                        value={opt}
+                                        checked={item.existence === opt}
+                                        onChange={(e) =>
+                                          handleDocumentUpdate(
+                                            doc.key,
+                                            "existence",
+                                            e.target.value,
+                                          )
+                                        }
+                                        className="text-blue-600 focus:ring-blue-500"
+                                      />
+                                      <span className="text-sm text-slate-700">
+                                        {opt}
+                                      </span>
+                                    </label>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Kesesuaian Dokumen */}
+                              <div className="space-y-2">
+                                <span className="text-sm font-medium text-slate-600">
+                                  Kesesuaian Dokumen
+                                </span>
+                                <div className="flex gap-4">
+                                  {["Sesuai", "Tidak Sesuai"].map((opt) => (
+                                    <label
+                                      key={opt}
+                                      className="flex items-center gap-2 cursor-pointer"
+                                    >
+                                      <input
+                                        type="radio"
+                                        name={`${doc.key}-suitability`}
+                                        value={opt}
+                                        checked={item.suitability === opt}
+                                        onChange={(e) =>
+                                          handleDocumentUpdate(
+                                            doc.key,
+                                            "suitability",
+                                            e.target.value,
+                                          )
+                                        }
+                                        className="text-blue-600 focus:ring-blue-500"
+                                      />
+                                      <span className="text-sm text-slate-700">
+                                        {opt}
+                                      </span>
+                                    </label>
+                                  ))}
+                                </div>
                               </div>
                             </div>
+                          )}
 
-                            {/* Kesesuaian Dokumen */}
-                            <div className="space-y-2">
-                              <span className="text-sm font-medium text-slate-600">
-                                Kesesuaian Dokumen
-                              </span>
-                              <div className="flex gap-4">
-                                {["Sesuai", "Tidak Sesuai"].map((opt) => (
-                                  <label
-                                    key={opt}
-                                    className="flex items-center gap-2 cursor-pointer"
-                                  >
-                                    <input
-                                      type="radio"
-                                      name={`${doc.key}-suitability`}
-                                      value={opt}
-                                      checked={item.suitability === opt}
-                                      onChange={(e) =>
-                                        handleDocumentUpdate(
-                                          doc.key,
-                                          "suitability",
-                                          e.target.value,
-                                        )
-                                      }
-                                      className="text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span className="text-sm text-slate-700">
-                                      {opt}
-                                    </span>
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
+                          <div className="pl-9 pt-4">
+                            <ValidatedInput
+                              id={`${doc.key}-catatan`}
+                              label="Catatan"
+                              value={item.catatan || ""}
+                              onChange={(e) =>
+                                handleDocumentUpdate(
+                                  doc.key,
+                                  "catatan",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="Tambahkan catatan..."
+                              icon={StickyNote}
+                            />
                           </div>
-                        )}
-
-                        <div className="pl-9 pt-4">
-                          <ValidatedInput
-                            id={`${doc.key}-catatan`}
-                            label="Catatan"
-                            value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
-                            }
-                            placeholder="Tambahkan catatan..."
-                            icon={StickyNote}
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
