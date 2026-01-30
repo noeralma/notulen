@@ -1,33 +1,22 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Type, User, FileText, StickyNote } from "lucide-react";
-import {
-  type Step4Data,
-  type LampiranItem,
-  INITIAL_DATA,
-} from "../../types/form";
+import { CheckCircle2, StickyNote } from "lucide-react";
+import type { Step6Data, LampiranItem } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { INITIAL_DATA } from "../../types/form";
 
-interface Step4GeneralProps {
-  data: Step4Data;
-  updateData: (data: Partial<Step4Data>) => void;
+interface Step6Props {
+  data: Step6Data;
+  updateData: (data: Partial<Step6Data>) => void;
   onValidityChange: (isValid: boolean) => void;
 }
 
-const Step4General: React.FC<Step4GeneralProps> = ({
+const Step6FinancialAspects: React.FC<Step6Props> = ({
   data,
   updateData,
   onValidityChange,
 }) => {
-  const {
-    judulPaket,
-    penggunaBarangJasa,
-    picPenggunaBarangJasa,
-    penggunaBarangJasaNotes,
-    generalDocuments,
-  } = data;
-
   useEffect(() => {
     const validateDocuments = (group?: Record<string, LampiranItem>) => {
       if (!group) return true;
@@ -37,26 +26,9 @@ const Step4General: React.FC<Step4GeneralProps> = ({
       });
     };
 
-    const isGeneralDocumentsValid = validateDocuments(generalDocuments);
-
-    const isValid =
-      judulPaket.trim() !== "" &&
-      penggunaBarangJasa !== "" &&
-      picPenggunaBarangJasa.trim() !== "" &&
-      isGeneralDocumentsValid;
-
+    const isValid = validateDocuments(data.financialDocuments);
     onValidityChange(isValid);
-  }, [
-    judulPaket,
-    penggunaBarangJasa,
-    picPenggunaBarangJasa,
-    generalDocuments,
-    onValidityChange,
-  ]);
-
-  const handleChange = (field: keyof Step4Data, value: string) => {
-    updateData({ [field]: value });
-  };
+  }, [data.financialDocuments, onValidityChange]);
 
   const getRowStatus = (item: LampiranItem) => {
     const cVal = item.isActive ? "√" : "X";
@@ -92,13 +64,13 @@ const Step4General: React.FC<Step4GeneralProps> = ({
 
   const handleDocumentToggle = (key: string) => {
     const currentDocs =
-      data.generalDocuments || INITIAL_DATA.step4.generalDocuments;
+      data.financialDocuments || INITIAL_DATA.step6.financialDocuments;
     if (!currentDocs) return;
 
     const newIsActive = !currentDocs[key].isActive;
 
     updateData({
-      generalDocuments: {
+      financialDocuments: {
         ...currentDocs,
         [key]: {
           ...currentDocs[key],
@@ -116,11 +88,11 @@ const Step4General: React.FC<Step4GeneralProps> = ({
     value: string,
   ) => {
     const currentDocs =
-      data.generalDocuments || INITIAL_DATA.step4.generalDocuments;
+      data.financialDocuments || INITIAL_DATA.step6.financialDocuments;
     if (!currentDocs) return;
 
     updateData({
-      generalDocuments: {
+      financialDocuments: {
         ...currentDocs,
         [key]: {
           ...currentDocs[key],
@@ -133,129 +105,27 @@ const Step4General: React.FC<Step4GeneralProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
       <div className="bg-blue-600 p-4 text-white">
-        <h2 className="text-xl font-bold mb-1">UMUM</h2>
+        <h2 className="text-xl font-bold mb-1">KETENTUAN ASPEK FINANSIAL</h2>
+        <p className="text-blue-100 opacity-90 text-sm">
+          Silakan lengkapi dokumen finansial di bawah ini.
+        </p>
       </div>
 
-      <div className="p-5 space-y-8">
-        {/* Existing Fields Section */}
+      <div className="p-5 space-y-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
-            Identitas Paket
-          </h3>
+          {PROJECT_CONSTANTS.STEP6_DOCUMENTS.map((doc) => {
+            const item = data.financialDocuments?.[doc.key] || {
+              isActive: false,
+              existence: null,
+              suitability: null,
+            };
 
-          {/* Judul Paket */}
-          <ValidatedInput
-            label="Judul Paket"
-            value={judulPaket}
-            onChange={(e) => handleChange("judulPaket", e.target.value)}
-            placeholder="Masukkan Judul Paket"
-            icon={Type}
-            required
-          />
+            const status = getRowStatus(item);
 
-          {/* Pengguna Barang/Jasa */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">
-              Pengguna Barang/Jasa
-            </label>
-            <div className="flex flex-wrap gap-4">
-              {PROJECT_CONSTANTS.STEP4_CONSTANTS.PENGGUNA_BARANG_JASA_OPTIONS.map(
-                (option) => (
-                  <label
-                    key={option}
-                    className={`
-                    flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 w-full md:w-auto
-                    ${
-                      penggunaBarangJasa === option
-                        ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
-                        : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"
-                    }
-                  `}
-                  >
-                    <input
-                      type="radio"
-                      name="penggunaBarangJasa"
-                      value={option}
-                      checked={penggunaBarangJasa === option}
-                      onChange={(e) =>
-                        handleChange("penggunaBarangJasa", e.target.value)
-                      }
-                      className="w-5 h-5 text-blue-600 focus:ring-blue-500 border-slate-300"
-                    />
-                    <span
-                      className={`font-medium text-sm ${
-                        penggunaBarangJasa === option
-                          ? "text-blue-700"
-                          : "text-slate-700"
-                      }`}
-                    >
-                      {option}
-                    </span>
-                  </label>
-                ),
-              )}
-            </div>
-
-            <AnimatePresence initial={false}>
-              {penggunaBarangJasa !== "" && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                  className="overflow-hidden"
-                >
-                  <div className="mt-3 space-y-1">
-                    <ValidatedInput
-                      label="Keterangan Pengguna Barang/Jasa"
-                      value={penggunaBarangJasaNotes}
-                      onChange={(e) =>
-                        handleChange("penggunaBarangJasaNotes", e.target.value)
-                      }
-                      placeholder="Tuliskan keterangan tambahan (misalnya unit atau detail lain)..."
-                      icon={FileText}
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* PIC Pengguna Barang/Jasa */}
-          <ValidatedInput
-            label="PIC Pengguna Barang/Jasa"
-            value={picPenggunaBarangJasa}
-            onChange={(e) =>
-              handleChange("picPenggunaBarangJasa", e.target.value)
-            }
-            placeholder="Masukkan Nama PIC"
-            icon={User}
-            required
-          />
-        </div>
-
-        {/* General Documents Section */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">
-            Kelengkapan Dokumen Umum
-          </h3>
-
-          <div className="space-y-4">
-            {PROJECT_CONSTANTS.STEP4_CONSTANTS.GENERAL_DOCUMENTS.map((doc) => {
-              const item = data.generalDocuments?.[doc.key] ||
-                INITIAL_DATA.step4.generalDocuments?.[doc.key] || {
-                  isActive: false,
-                  existence: null,
-                  suitability: null,
-                  catatan: "",
-                };
-
-              const status = getRowStatus(item);
-
-              return (
-                <div
-                  key={doc.key}
-                  className={`
+            return (
+              <div
+                key={doc.key}
+                className={`
                     p-4 rounded-xl border-2 transition-all duration-200
                     ${
                       item.isActive
@@ -263,11 +133,11 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                         : "border-slate-100 bg-slate-50"
                     }
                   `}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <div
-                        className={`
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <div
+                      className={`
                           w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
                           ${
                             item.isActive
@@ -275,56 +145,57 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                               : "border-slate-300 bg-white"
                           }
                         `}
-                      >
-                        {item.isActive && (
-                          <CheckCircle2 className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={item.isActive}
-                        onChange={() => handleDocumentToggle(doc.key)}
-                        className="hidden"
-                      />
-                      <span
-                        className={`font-medium ${
-                          item.isActive ? "text-slate-900" : "text-slate-500"
-                        }`}
-                      >
-                        {doc.label}
-                      </span>
-                    </label>
+                    >
+                      {item.isActive && (
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={item.isActive}
+                      onChange={() => handleDocumentToggle(doc.key)}
+                      className="hidden"
+                    />
+                    <span
+                      className={`font-medium ${
+                        item.isActive ? "text-slate-900" : "text-slate-500"
+                      }`}
+                    >
+                      {doc.label}
+                    </span>
+                  </label>
 
-                    {status && (
-                      <div
-                        className={`
+                  {status && (
+                    <div
+                      className={`
                           px-3 py-1 rounded-full text-xs font-bold border
                           ${
                             status === "Closed"
                               ? "bg-green-100 text-green-700 border-green-200"
                               : status === "Open"
-                                ? "bg-orange-100 text-orange-700 border-orange-200"
+                                ? "bg-blue-100 text-blue-700 border-blue-200"
                                 : "bg-red-100 text-red-700 border-red-200"
                           }
                         `}
-                      >
-                        {status.toUpperCase()}
-                      </div>
-                    )}
-                  </div>
+                    >
+                      {status}
+                    </div>
+                  )}
+                </div>
 
+                <div className="overflow-hidden">
                   <AnimatePresence>
                     {item.isActive && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
+                        className="space-y-4 pt-2 border-t border-slate-200/60"
                       >
-                        <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
-                              Ketersediaan Dokumen
+                              Keberadaan Dokumen
                             </span>
                             <div className="flex gap-4">
                               {["Ada", "Tidak Ada"].map((opt) => (
@@ -407,13 +278,13 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                     )}
                   </AnimatePresence>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
 
-export default Step4General;
+export default Step6FinancialAspects;

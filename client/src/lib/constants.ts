@@ -48,5 +48,77 @@ export const PROJECT_CONSTANTS = {
   ] as const,
   STEP4_CONSTANTS: {
     PENGGUNA_BARANG_JASA_OPTIONS: ["GM", "GH", "DH", "Others"] as const,
+    GENERAL_DOCUMENTS: [
+      { key: "usulanPenyedia", label: "Usulan Penyedia" },
+      {
+        key: "pertimbanganUsulanPenyedia",
+        label: "Pertimbangan Usulan Penyedia",
+      },
+      {
+        key: "statusPerusahaanPenyedia",
+        label: "Status Perusahaan Penyedia",
+      },
+      { key: "paktaIntegritasPengguna", label: "Pakta Integritas Pengguna" },
+      { key: "sumberAnggaran", label: "Sumber Anggaran" },
+      { key: "jenisAnggaran", label: "Jenis Anggaran" },
+    ] as const,
   },
+  STEP5_TEXT: {
+    TITLE: "LINGKUP PEKERJAAN",
+    REMINDER_1_TITLE: "Konfirmasi Tujuan Pengadaan",
+    REMINDER_1_BODY:
+      "Tujuan dari pengadaan ini adalah untuk mendapatkan Penyedia Jasa Teknis Operasional LNG Trading dan Transportasi guna mendukung pelaksanaan kegiatan yang berkaitan dengan LNG Operation baik di market domestik atau internasional, meliputi dukungan terkait perencanaan dan penjadwalan kargo, serta kegiatan operasional, komersial, dan administratif harian (“Pekerjaan”), sehingga pelaksanaan operasional LNG dapat berjalan dengan lancar.",
+    REMINDER_2_TITLE: "Uraian Singkat Pekerjaan",
+    REMINDER_2_BODY:
+      "Penyedia Jasa bertanggung jawab atas pelaksanaan kegiatan operasional yang mendukung proses LNG Trading dan Transportasi, baik secara domestik maupun internasional. Lingkup pekerjaan mencakup pengelolaan aktivitas planning & scheduling seperti penyusunan ADP, SDS, Price Notice, serta pengaturan jadwal kargo dan koordinasi pelaksanaan pengiriman. Selain itu, termasuk pula kegiatan teknis seperti Ship Shore Compatibility Study (SSCS), vetting kapal, serta kegiatan komersial seperti invoicing, pelaporan, dan penyusunan kontrak pendukung operasional. Ruang lingkup ini juga mencakup kebutuhan buyer/seller representative, independent surveyor, dan/atau pengadaan LNG carrier untuk mendukung pasokan dan kegiatan LNG Trading.",
+  },
+  STEP5_DOCUMENTS: [
+    {
+      key: "spesifikasiTeknisBarang",
+      label: "Spesifikasi Teknis (Untuk Barang)",
+    },
+    { key: "targetSelesaiPengadaan", label: "Target Selesai Pengadaan" },
+    { key: "jangkaWaktuPekerjaan", label: "Jangka Waktu Pekerjaan" },
+    { key: "masaPemeliharaanGaransi", label: "Masa Pemeliharaan/Garansi" },
+    {
+      key: "lokasiPekerjaanFrancoBarang",
+      label: "Lokasi Pekerjaan/Franco Barang",
+    },
+    { key: "bentukPenyerahanPekerjaan", label: "Bentuk Penyerahan Pekerjaan" },
+    { key: "aspekK3HssePlan", label: "Aspek K3/HSSE Plan dalam KAK" },
+    { key: "komitmenPelaksanaanTkdn", label: "Komitmen Pelaksanaan TKDN" },
+    { key: "formA1Tkdn", label: "Form A1 TKDN" },
+    { key: "formA2Tkdn", label: "Form A2 TKDN" },
+    { key: "formMonitoringB1Tkdn", label: "Form Monitoring (B1) TKDN" },
+  ] as const,
+  STEP6_DOCUMENTS: [
+    { key: "jaminanPelaksanaan", label: "Jaminan Pelaksanaan" },
+    { key: "uangMuka", label: "Uang Muka" },
+    { key: "jaminanUangMuka", label: "Jaminan Uang Muka" },
+    { key: "jaminanPemeliharaan", label: "Jaminan Pemeliharaan" },
+    { key: "retensiPemeliharaan", label: "Retensi Pemeliharaan" },
+    { key: "jaminanTkdn", label: "Jaminan TKDN" },
+    { key: "retensiTkdn", label: "Retensi TKDN" },
+    {
+      key: "sanksiFinansialTkdn",
+      label:
+        "Pemberitahuan Sanksi Finansial TKDN (Penagihan Sanksi Finansial TKDN di belakang)",
+    },
+    { key: "asuransi", label: "Asuransi" },
+    { key: "sistemPembayaran", label: "Sistem Pembayaran" },
+    { key: "tahapanTermijnPembayaran", label: "Tahapan Termijn Pembayaran" },
+    {
+      key: "sanksiDendaKeterlambatan",
+      label: "Pengenaan Sanksi/Denda Keterlambatan",
+    },
+  ] as const,
+  STEP7_TEXT: {
+    TITLE: "CSMS",
+  },
+  STEP7_DOCUMENTS: [
+    {
+      key: "penilaianCsms",
+      label: "Penilaian CSMS terhadap lingkup pekerjaan",
+    },
+  ] as const,
 };

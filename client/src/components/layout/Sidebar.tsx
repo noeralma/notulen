@@ -12,6 +12,7 @@ interface SidebarProps {
   onNavigate: (page: string) => void;
   isCollapsed: boolean;
   toggleCollapse: () => void;
+  isMobileOpen?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -19,6 +20,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onNavigate,
   isCollapsed,
   toggleCollapse,
+  isMobileOpen = false,
 }) => {
   const [logoSrc, setLogoSrc] = useState("/logo.svg");
   const [usePlaceholder, setUsePlaceholder] = useState(false);
@@ -44,7 +46,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`bg-blue-600 text-white min-h-screen flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ${isCollapsed ? "w-20" : "w-56"}`}
+      className={`
+        bg-blue-600 text-white min-h-screen flex flex-col fixed left-0 top-0 z-50
+        transition-transform duration-300
+        ${isCollapsed ? "w-20" : "w-56"}
+        transform
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0
+      `}
     >
       {/* Logo Area */}
       <div

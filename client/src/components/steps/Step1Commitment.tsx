@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Info } from "lucide-react";
+import { Check, Info, FileText } from "lucide-react";
 import type { Step1Data } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
+import { ValidatedInput } from "../ui/ValidatedInput";
 
 interface Props {
   data: Step1Data;
@@ -124,12 +125,12 @@ const Step1Commitment: React.FC<Props> = ({
                 animate={{ height: "auto", opacity: 1 }}
                 className="ml-10 mt-2"
               >
-                <input
-                  type="text"
+                <ValidatedInput
                   value={data.othersDescription}
                   onChange={handleOthersChange}
                   placeholder="Sebutkan lainnya..."
-                  className="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  icon={FileText}
+                  required
                 />
               </motion.div>
             )}

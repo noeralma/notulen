@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, AlertTriangle, CheckCircle2, User } from "lucide-react";
+import { Calendar, CheckCircle2, User, StickyNote } from "lucide-react";
+import { ValidatedInput } from "../ui/ValidatedInput";
 import {
   type Step3Data,
   type LampiranItem,
@@ -25,7 +26,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
   useEffect(() => {
     const validateStep = () => {
-      const isNameValid = data.nama === PROJECT_CONSTANTS.EXPECTED_NAME;
+      const isNameValid = (data.nama?.trim().length ?? 0) > 0;
       const isCreatedDateValid = !!data.createdDate;
       const isApprovedDateValid = !!data.approvedDate;
       const isProjectTypeValid = !!data.projectType;
@@ -42,8 +43,8 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
         setDateError(null);
       }
 
-      if (data.nama && data.nama !== PROJECT_CONSTANTS.EXPECTED_NAME) {
-        setNameError("Input doesn't match");
+      if (!data.nama || data.nama.trim().length === 0) {
+        if (isTouched) setNameError("Name is required");
       } else {
         setNameError(null);
       }
@@ -298,125 +299,40 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
           </div>
 
           {/* Nama Input */}
-          <div className="space-y-2">
-            <label
-              htmlFor="nama"
-              className="block text-sm font-medium text-slate-700"
-            >
-              Nama <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-slate-400" />
-              </div>
-              <input
-                type="text"
-                id="nama"
-                value={data.nama}
-                onChange={handleNameChange}
-                className={`
-                  block w-full pl-10 pr-10 py-3 rounded-xl border-2 transition-colors duration-200
-                  focus:outline-none focus:ring-0
-                  ${
-                    data.nama === PROJECT_CONSTANTS.EXPECTED_NAME
-                      ? "border-green-500 bg-green-50 text-green-900"
-                      : nameError
-                        ? "border-red-300 bg-red-50 text-red-900 focus:border-red-500"
-                        : "border-slate-200 focus:border-blue-500 hover:border-blue-300"
-                  }
-                `}
-                placeholder="Enter input"
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                {data.nama === PROJECT_CONSTANTS.EXPECTED_NAME ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
-                ) : nameError ? (
-                  <AlertTriangle className="h-5 w-5 text-red-500" />
-                ) : null}
-              </div>
-            </div>
-
-            {/* Validation Message */}
-            <div className="h-6">
-              <AnimatePresence>
-                {nameError && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="text-sm text-red-600 flex items-center gap-1"
-                  >
-                    <AlertTriangle className="w-3 h-3" />
-                    {nameError}
-                  </motion.p>
-                )}
-                {!nameError && !data.nama && isTouched && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-xs text-slate-400"
-                  >
-                    Required field must match
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
+          <ValidatedInput
+            id="nama"
+            label="Nama"
+            value={data.nama}
+            onChange={handleNameChange}
+            placeholder="Enter Project Name"
+            icon={User}
+            required
+            error={nameError}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Created Date */}
-            <div className="space-y-2">
-              <label
-                htmlFor="createdDate"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Created Date <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Calendar className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="date"
-                  id="createdDate"
-                  value={data.createdDate}
-                  onChange={(e) => updateData({ createdDate: e.target.value })}
-                  className="block w-full pl-10 pr-3 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:outline-none transition-colors duration-200"
-                />
-              </div>
-            </div>
+            <ValidatedInput
+              id="createdDate"
+              label="Created Date"
+              type="date"
+              value={data.createdDate}
+              onChange={(e) => updateData({ createdDate: e.target.value })}
+              icon={Calendar}
+              required
+            />
 
             {/* Approved Date */}
-            <div className="space-y-2">
-              <label
-                htmlFor="approvedDate"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Approved Date <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Calendar className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="date"
-                  id="approvedDate"
-                  value={data.approvedDate}
-                  onChange={(e) => updateData({ approvedDate: e.target.value })}
-                  className={`
-                    block w-full pl-10 pr-3 py-3 rounded-xl border-2 transition-colors duration-200 focus:outline-none
-                    ${
-                      dateError
-                        ? "border-red-300 focus:border-red-500 bg-red-50"
-                        : "border-slate-200 focus:border-blue-500"
-                    }
-                  `}
-                />
-              </div>
-              {dateError && (
-                <p className="text-sm text-red-600 mt-1">{dateError}</p>
-              )}
-            </div>
+            <ValidatedInput
+              id="approvedDate"
+              label="Approved Date"
+              type="date"
+              value={data.approvedDate}
+              onChange={(e) => updateData({ approvedDate: e.target.value })}
+              icon={Calendar}
+              required
+              error={dateError}
+            />
           </div>
         </div>
 
@@ -575,28 +491,20 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
                         {/* Catatan */}
                         <div className="pl-9 pt-4">
-                          <div className="space-y-2">
-                            <label
-                              htmlFor={`${doc.key}-catatan`}
-                              className="block text-sm font-medium text-slate-600"
-                            >
-                              Catatan
-                            </label>
-                            <input
-                              type="text"
-                              id={`${doc.key}-catatan`}
-                              value={item.catatan || ""}
-                              onChange={(e) =>
-                                handleLampiranUpdate(
-                                  doc.key,
-                                  "catatan",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Tambahkan catatan..."
-                              className="block w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm"
-                            />
-                          </div>
+                          <ValidatedInput
+                            id={`${doc.key}-catatan`}
+                            label="Catatan"
+                            value={item.catatan || ""}
+                            onChange={(e) =>
+                              handleLampiranUpdate(
+                                doc.key,
+                                "catatan",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="Tambahkan catatan..."
+                            icon={StickyNote}
+                          />
                         </div>
                       </motion.div>
                     )}
@@ -760,28 +668,20 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
-                          <div className="space-y-2">
-                            <label
-                              htmlFor={`${doc.key}-catatan`}
-                              className="block text-sm font-medium text-slate-600"
-                            >
-                              Catatan
-                            </label>
-                            <input
-                              type="text"
-                              id={`${doc.key}-catatan`}
-                              value={item.catatan || ""}
-                              onChange={(e) =>
-                                handleTkdnUpdate(
-                                  doc.key,
-                                  "catatan",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Tambahkan catatan..."
-                              className="block w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm"
-                            />
-                          </div>
+                          <ValidatedInput
+                            id={`${doc.key}-catatan`}
+                            label="Catatan"
+                            value={item.catatan || ""}
+                            onChange={(e) =>
+                              handleTkdnUpdate(
+                                doc.key,
+                                "catatan",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="Tambahkan catatan..."
+                            icon={StickyNote}
+                          />
                         </div>
                       </motion.div>
                     )}
@@ -945,28 +845,20 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
-                          <div className="space-y-2">
-                            <label
-                              htmlFor={`${doc.key}-catatan`}
-                              className="block text-sm font-medium text-slate-600"
-                            >
-                              Catatan
-                            </label>
-                            <input
-                              type="text"
-                              id={`${doc.key}-catatan`}
-                              value={item.catatan || ""}
-                              onChange={(e) =>
-                                handlePrMysapUpdate(
-                                  doc.key,
-                                  "catatan",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Tambahkan catatan..."
-                              className="block w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:outline-none transition-colors duration-200 text-sm"
-                            />
-                          </div>
+                          <ValidatedInput
+                            id={`${doc.key}-catatan`}
+                            label="Catatan"
+                            value={item.catatan || ""}
+                            onChange={(e) =>
+                              handlePrMysapUpdate(
+                                doc.key,
+                                "catatan",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="Tambahkan catatan..."
+                            icon={StickyNote}
+                          />
                         </div>
                       </motion.div>
                     )}

@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import { LogOut, Settings, User, ChevronDown } from "lucide-react";
+import { LogOut, Settings, User, ChevronDown, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
   isCollapsed?: boolean;
+  onToggleMobileSidebar?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isCollapsed = false }) => {
+const Header: React.FC<HeaderProps> = ({
+  isCollapsed = false,
+  onToggleMobileSidebar,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -29,10 +33,21 @@ const Header: React.FC<HeaderProps> = ({ isCollapsed = false }) => {
 
   return (
     <header
-      className={`h-16 bg-white shadow-sm flex items-center justify-end px-8 fixed top-0 right-0 z-40 transition-all duration-300 ${
-        isCollapsed ? "left-20" : "left-56"
+      className={`h-16 bg-white shadow-sm flex items-center justify-between px-4 md:px-8 fixed top-0 right-0 z-40 transition-all duration-300 left-0 ${
+        isCollapsed ? "md:left-20" : "md:left-56"
       }`}
     >
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          aria-label="Toggle navigation"
+          className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
+          onClick={onToggleMobileSidebar}
+        >
+          <Menu size={18} />
+        </button>
+      </div>
+
       <div ref={dropdownRef} className="relative">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}

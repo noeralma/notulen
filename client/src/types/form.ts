@@ -17,6 +17,17 @@ export interface LampiranItem {
   existence: "Ada" | "Tidak Ada" | null;
   suitability: "Sesuai" | "Tidak Sesuai" | null;
   catatan?: string;
+  // Specific for Step 5 HSSE
+  requirement?: "Dipersyaratkan" | "Tidak Dipersyaratkan" | null;
+  riskLevel?: "Rendah" | "Menengah" | "Tinggi" | null;
+  // Specific for Step 7 CSMS
+  formatSuitability?: "Sesuai" | "Tidak Sesuai" | null;
+  judulSuitability?: "Sesuai" | "Tidak Sesuai" | null;
+  lokasiSuitability?: "Sesuai" | "Tidak Sesuai" | null;
+  durasiSuitability?: "Sesuai" | "Tidak Sesuai" | null;
+  kesimpulanResiko?: string;
+  tanggal?: string;
+  penandatanganan?: string;
 }
 
 export interface Step3Data {
@@ -34,6 +45,19 @@ export interface Step4Data {
   penggunaBarangJasa: "GM" | "GH" | "DH" | "Others" | "";
   picPenggunaBarangJasa: string;
   penggunaBarangJasaNotes: string;
+  generalDocuments?: Record<string, LampiranItem>;
+}
+
+export interface Step5Data {
+  scopeDocuments?: Record<string, LampiranItem>;
+}
+
+export interface Step6Data {
+  financialDocuments?: Record<string, LampiranItem>;
+}
+
+export interface Step7Data {
+  csmsDocuments?: Record<string, LampiranItem>;
 }
 
 export interface FormData {
@@ -41,6 +65,9 @@ export interface FormData {
   step2: Step2Data;
   step3: Step3Data;
   step4: Step4Data;
+  step5: Step5Data;
+  step6: Step6Data;
+  step7: Step7Data;
   // Will add other steps here later
 }
 
@@ -160,5 +187,199 @@ export const INITIAL_DATA: FormData = {
     penggunaBarangJasa: "",
     picPenggunaBarangJasa: "",
     penggunaBarangJasaNotes: "",
+    generalDocuments: {
+      usulanPenyedia: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      pertimbanganUsulanPenyedia: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      statusPerusahaanPenyedia: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      paktaIntegritasPengguna: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      sumberAnggaran: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jenisAnggaran: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step5: {
+    scopeDocuments: {
+      spesifikasiTeknisBarang: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      targetSelesaiPengadaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jangkaWaktuPekerjaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      masaPemeliharaanGaransi: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      lokasiPekerjaanFrancoBarang: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      bentukPenyerahanPekerjaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      aspekK3HssePlan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      komitmenPelaksanaanTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      formA1Tkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      formA2Tkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      formMonitoringB1Tkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step6: {
+    financialDocuments: {
+      jaminanPelaksanaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      uangMuka: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanUangMuka: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanPemeliharaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      retensiPemeliharaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      retensiTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      sanksiFinansialTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      asuransi: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      sistemPembayaran: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      tahapanTermijnPembayaran: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      sanksiDendaKeterlambatan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step7: {
+    csmsDocuments: {
+      penilaianCsms: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
   },
 };
