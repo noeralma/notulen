@@ -196,5 +196,127 @@ export const PROJECT_CONSTANTS = {
     { key: "printOutPr", label: "Print Out PR" },
     { key: "screenshotApprovalPr", label: "Screenshot Approval PR" },
   ],
+  STEP14_TEXT: {
+    TITLE: "PROSES PEMILIHAN",
+  },
+  STEP14_CONSTANTS: {
+    METODE_PENGADAAN: [
+      "Pengadaan Langsung",
+      "Penunjukkan Langsung",
+      "Sinergi Pertamina Incorporated (Penunjukan)",
+      "Pemilihan Langsung",
+      "Tender Terbatas",
+      "Tender Terbuka",
+      "Tender Cepat",
+    ] as const,
+    METODE_PEMASUKAN_DOKUMEN: [
+      "1 Tahap dan 1 Sampul/File",
+      "1 Tahap dan 2 Sampul/File",
+      "2 Tahap",
+    ] as const,
+    METODE_EVALUASI: [
+      "Non Scoring",
+      "Scoring - Harga Terendah",
+      "Scoring - Kombinasi Teknis dan Harga",
+      "Scoring - Penilaian Biaya Selama Umur Ekonomis",
+      "Scoring - Kualitas",
+      "Scoring - Kombinasi Kualitas dan Harga",
+      "Lainnya:",
+    ] as const,
+    KLASIFIKASI_PENGADAAN: [
+      "Barang",
+      "Pekerjaan Konstruksi",
+      "Jasa Konsultansi Konstruksi",
+      "Jasa Konsultansi Non Konstruksi",
+      "Jasa Lainnya",
+    ] as const,
+    DPT_OPTIONS: ["Aktif (VSKT)", "Tidak Aktif"] as const,
+    KUALIFIKASI_OPTIONS: ["Kecil", "Non-Kecil"] as const,
+    INFO_KUALIFIKASI: [
+      "Ketentuan Golongan/kualifikasi usaha mempertimbangkan kebutuhan kemampuan teknis dari penyedia atas pekerjaan.",
+      "Kesesuaian antara golongan usaha dengan nilai dapat dikecualikan apabila memenuhi:",
+      "(1) Golongan usaha Sub-Holding Pertamina/Anak Perusahaan Pertamina/Perusahaan Terafiliasi Pertamina yang ditunjuk dengan metode Sinergi Pertamina Incorporated dapat dikecualikan dengan kesesuaian persyaratan golongan usaha dengan pekerjaan yang akan dilaksanakan;",
+      "(2) Merupakan Perusahaan Asing atau sebagai Manufacture/Pabrikan/Agen Tunggal/Distributor Tunggal dalam maupun luar negeri;",
+      "(3) Jasa Konsultansi Non-Konstruksi, dan tetap sesuai dengan produk atau layanan yang sesuai dengan bidang usaha dari Penyedia Barang/Jasa",
+    ],
+  },
+  STEP14_DOCUMENTS: [
+    {
+      key: "klasifikasiBidangSubBidang",
+      label: "Klasifikasi (Bidang / Sub Bidang)",
+    },
+  ] as const,
+  STEP14_JAMINAN_DOCUMENTS: [
+    { key: "jaminanPenawaran", label: "Jaminan Penawaran" },
+    { key: "jaminanSanggahan", label: "Jaminan Sanggahan" },
+    { key: "jaminanPelaksanaan", label: "Jaminan Pelaksanaan" },
+    { key: "jaminanUangMuka", label: "Jaminan Uang Muka" },
+    { key: "jaminanPemeliharaan", label: "Jaminan Pemeliharaan" },
+    { key: "retensiPemeliharaan", label: "Retensi Pemeliharaan" },
+    { key: "jaminanTkdn", label: "Jaminan TKDN" },
+    { key: "retensiTkdn", label: "Retensi TKDN" },
+    {
+      key: "penagihanSanksiFinansialTkdn",
+      label: "Penagihan Sanksi Finansial TKDN di belakang",
+    },
+  ] as const,
+  STEP15_TEXT: {
+    TITLE: "RENCANA JADWAL",
+    ACCEPTANCE_TEXT:
+      "Perkiraan waktu proses pengadaan s.d terkontrak sebagaimana terlampir (disesuaikan terhadap penyampaian kekurangan dokumen permintaan dan revisi dokumen permintaan (bila ada)",
+    AGREEMENT_LABEL: "Saya Mengerti dan Setuju",
+    AGREEMENT_SUBTEXT: "Klik disini untuk menyetujui pernyataan diatas",
+  },
+  STEP16_TEXT: {
+    TITLE: "PELAKSANAAN JADWAL",
+    ACCEPTANCE_TEXT: "Dilaksanakan sesuai Rencana Jadwal",
+    AGREEMENT_LABEL: "Saya Mengerti dan Setuju",
+    AGREEMENT_SUBTEXT: "Klik disini untuk menyetujui pernyataan diatas",
+  },
+  STEP17_TEXT: {
+    TITLE: "LAINNYA",
+    ITEMS: [
+      {
+        id: 1,
+        text: "Pengguna Barang/Jasa wajib berkoordinasi baik terkait proses pemilihan penyedia maupun terkait penyusunan draft Kontrak, serta dalam proses administrasi pelaksanaan kontrak (kerja tambah/kurang, BAP dan BAST) dengan Fungsi Pengadaan (Pemilihan) – Procurement melalui pgn.procurement@pertamina.com.",
+      },
+      {
+        id: 2,
+        text: "Evaluasi Kinerja Penyedia Barang/Jasa: Diberlakukan dan dilakukan oleh:",
+        subItems: [
+          "Fungsi Pengadaan (Pemilihan) pada tahapan Pemilihan Penyedia Barang/Jasa",
+          "Pejabat Penandatangan Kontrak pada tahapan Pelaksanaan Kontrak sesuai ketentuan yang berlaku.",
+        ],
+      },
+      {
+        id: 3,
+        text: "Penggunaan aplikasi MySAP:",
+        subItems: [
+          "Agar Pengguna Barang/Jasa menyampaikan scan kontrak beserta perubahannya (jika ada) serta form request create dan release PO setelah penandatanganan kepada Fungsi Pengadaan (Pemilihan) - Procurement melalui email ke: pgn.procurement@pertamina.com untuk permintaan pembuatan No. PO MySAP kepada SS Proc.",
+          "Pengguna Barang/Jasa wajib melakukan create Service Acceptance (SA)/Goods Receipt (GR).",
+        ],
+      },
+      {
+        id: 4,
+        text: "Identifikasi Risiko Proses Pemilihan:",
+        subItems: [
+          "Pelaksanaan negosiasi dilaksanakan lebih dari 1 kali.",
+          "Hasil Harga Negosiasi berpotensi di atas HPS.",
+          "Tidak ada peserta pemilihan yang memasukkan dokumen penawaran.",
+          "Terdapat potensi nilai komitmen TKDN yang disampaikan Calon Penyedia di bawah nilai minimal yang disyaratkan.",
+        ],
+      },
+      {
+        id: 5,
+        text: "Setelah pekerjaan selesai, Pengguna Barang/Jasa diharapkan untuk menyampaikan dokumen sebagai berikut:",
+        subItems: [
+          "Kontrak",
+          "Laporan TKDN (untuk Komitmen Penyedia dengan %TKDN > 0%)",
+          "Evaluasi Kinerja Penyedia Barang/Jasa",
+        ],
+      },
+    ],
+    AGREEMENT_LABEL: "Saya Telah Membaca dan Memahami Informasi Diatas",
+  },
   PROJECT_CONSTANTS_END: true,
 };

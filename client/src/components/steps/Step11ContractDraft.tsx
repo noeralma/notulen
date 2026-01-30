@@ -66,7 +66,7 @@ const InfoModal = ({
                       <span className="shrink-0 font-semibold text-slate-800 select-none">
                         {idx + 1}.
                       </span>
-                      <span>{paragraph}</span>
+                      <span className="text-justify">{paragraph}</span>
                     </li>
                   ))}
                 </ul>
@@ -74,7 +74,7 @@ const InfoModal = ({
                 content.map((paragraph, idx) => (
                   <p
                     key={idx}
-                    className="text-slate-600 leading-relaxed text-sm"
+                    className="text-slate-600 leading-relaxed text-sm text-justify"
                   >
                     {paragraph}
                   </p>

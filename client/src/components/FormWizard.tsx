@@ -17,6 +17,10 @@ import type {
   Step11Data,
   Step12Data,
   Step13Data,
+  Step14Data,
+  Step15Data,
+  Step16Data,
+  Step17Data,
 } from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
@@ -32,6 +36,10 @@ import Step10CommercialEvaluation from "./steps/Step10CommercialEvaluation";
 import Step11ContractDraft from "./steps/Step11ContractDraft";
 import Step12HPS from "./steps/Step12HPS";
 import Step13MySAP from "./steps/Step13MySAP";
+import Step14ProsesPemilihan from "./steps/Step14ProsesPemilihan";
+import Step15RencanaJadwal from "./steps/Step15RencanaJadwal";
+import Step16ScheduleExecution from "./steps/Step16ScheduleExecution";
+import Step17Lainnya from "./steps/Step17Lainnya";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -131,6 +139,34 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep14Data = (data: Partial<Step14Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step14: { ...prev.step14, ...data },
+    }));
+  };
+
+  const updateStep15Data = (data: Partial<Step15Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step15: { ...prev.step15, ...data },
+    }));
+  };
+
+  const updateStep16Data = (data: Partial<Step16Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step16: { ...prev.step16, ...data },
+    }));
+  };
+
+  const updateStep17Data = (data: Partial<Step17Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step17: { ...prev.step17, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -157,6 +193,10 @@ const FormWizard: React.FC = () => {
   const currentStep11Data = formData.step11 || INITIAL_DATA.step11 || {};
   const currentStep12Data = formData.step12 || INITIAL_DATA.step12 || {};
   const currentStep13Data = formData.step13 || INITIAL_DATA.step13 || {};
+  const currentStep14Data = formData.step14 || INITIAL_DATA.step14 || {};
+  const currentStep15Data = formData.step15 || INITIAL_DATA.step15 || {};
+  const currentStep16Data = formData.step16 || INITIAL_DATA.step16 || {};
+  const currentStep17Data = formData.step17 || INITIAL_DATA.step17 || {};
 
   const handleNext = () => {
     if (isStepValid && currentStep < totalSteps) {
@@ -275,6 +315,38 @@ const FormWizard: React.FC = () => {
           <Step13MySAP
             data={currentStep13Data}
             updateData={updateStep13Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 14:
+        return (
+          <Step14ProsesPemilihan
+            data={currentStep14Data}
+            updateData={updateStep14Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 15:
+        return (
+          <Step15RencanaJadwal
+            data={currentStep15Data}
+            updateData={updateStep15Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 16:
+        return (
+          <Step16ScheduleExecution
+            data={currentStep16Data}
+            updateData={updateStep16Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 17:
+        return (
+          <Step17Lainnya
+            data={currentStep17Data}
+            updateData={updateStep17Data}
             onValidityChange={setIsStepValid}
           />
         );

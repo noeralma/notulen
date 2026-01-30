@@ -105,6 +105,31 @@ export interface Step13Data {
   mySapDocuments?: Record<string, LampiranItem>;
 }
 
+export interface Step14Data {
+  judulPaket: string;
+  metodePengadaan: string;
+  metodePemasukanDokumen: string;
+  metodeEvaluasi: string;
+  metodeEvaluasiLainnya?: string;
+  klasifikasiPengadaan: string;
+  dpt: string[];
+  kualifikasi: string[];
+  prosesPemilihanDocuments?: Record<string, LampiranItem>;
+  jaminanDocuments?: Record<string, LampiranItem>;
+}
+
+export interface Step15Data {
+  schedulePlan: boolean;
+}
+
+export interface Step16Data {
+  scheduleExecution: boolean;
+}
+
+export interface Step17Data {
+  read: boolean;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
@@ -119,6 +144,10 @@ export interface FormData {
   step11: Step11Data;
   step12: Step12Data;
   step13: Step13Data;
+  step14: Step14Data;
+  step15: Step15Data;
+  step16: Step16Data;
+  step17: Step17Data;
   // Will add other steps here later
 }
 
@@ -549,5 +578,88 @@ export const INITIAL_DATA: FormData = {
         catatan: "",
       },
     },
+  },
+  step14: {
+    judulPaket: "",
+    metodePengadaan: "",
+    metodePemasukanDokumen: "",
+    metodeEvaluasi: "",
+    metodeEvaluasiLainnya: "",
+    klasifikasiPengadaan: "",
+    dpt: [],
+    kualifikasi: [],
+    prosesPemilihanDocuments: {
+      klasifikasiBidangSubBidang: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+    jaminanDocuments: {
+      jaminanPenawaran: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanSanggahan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanPelaksanaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanUangMuka: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanPemeliharaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      retensiPemeliharaan: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      jaminanTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      retensiTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      penagihanSanksiFinansialTkdn: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step15: {
+    schedulePlan: false,
+  },
+  step16: {
+    scheduleExecution: false,
+  },
+  step17: {
+    read: false,
   },
 };
