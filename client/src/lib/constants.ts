@@ -121,4 +121,23 @@ export const PROJECT_CONSTANTS = {
       label: "Penilaian CSMS terhadap lingkup pekerjaan",
     },
   ] as const,
+  STEP8_TEXT: {
+    TITLE: "KRITERIA PENILAIAN KUALIFIKASI KHUSUS",
+  },
+  STEP8_DOCUMENTS: [
+    { key: "kemampuanDasar", label: "Kemampuan Dasar (KD)" },
+    { key: "sisaKemampuanPaket", label: "Sisa Kemampuan Paket (SKP)" },
+    { key: "lainnya", label: "Lainnya" },
+  ] as const,
+  STEP9_TEXT: {
+    TITLE: "KRITERIA EVALUASI TEKNIS",
+  },
+  STEP9_DOCUMENTS: [
+    { key: "kriteriaPenilaianTeknis", label: "Kriteria Penilaian Teknis" },
+    {
+      key: "subKriteriaEvaluasiTeknis",
+      label: "Sub Kriteria Evaluasi Teknis (dalam hal evaluasi scoring)",
+    },
+  ] as const,
+  PROJECT_CONSTANTS_END: true,
 };

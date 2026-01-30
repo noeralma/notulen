@@ -11,6 +11,8 @@ import type {
   Step5Data,
   Step6Data,
   Step7Data,
+  Step8Data,
+  Step9Data,
 } from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
@@ -20,6 +22,8 @@ import Step4General from "./steps/Step4General";
 import Step5ScopeOfWork from "./steps/Step5ScopeOfWork";
 import Step6FinancialAspects from "./steps/Step6FinancialAspects";
 import Step7Csms from "./steps/Step7Csms";
+import Step8SpecialQualification from "./steps/Step8SpecialQualification";
+import Step9TechnicalEvaluation from "./steps/Step9TechnicalEvaluation";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -77,6 +81,20 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep8Data = (data: Partial<Step8Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step8: { ...prev.step8, ...data },
+    }));
+  };
+
+  const updateStep9Data = (data: Partial<Step9Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step9: { ...prev.step9, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -97,6 +115,8 @@ const FormWizard: React.FC = () => {
   const currentStep5Data = formData.step5 || INITIAL_DATA.step5 || {};
   const currentStep6Data = formData.step6 || INITIAL_DATA.step6 || {};
   const currentStep7Data = formData.step7 || INITIAL_DATA.step7 || {};
+  const currentStep8Data = formData.step8 || INITIAL_DATA.step8 || {};
+  const currentStep9Data = formData.step9 || INITIAL_DATA.step9 || {};
 
   const handleNext = () => {
     if (isStepValid && currentStep < totalSteps) {
@@ -167,6 +187,22 @@ const FormWizard: React.FC = () => {
           <Step7Csms
             data={currentStep7Data}
             updateData={updateStep7Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 8:
+        return (
+          <Step8SpecialQualification
+            data={currentStep8Data}
+            updateData={updateStep8Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 9:
+        return (
+          <Step9TechnicalEvaluation
+            data={currentStep9Data}
+            updateData={updateStep9Data}
             onValidityChange={setIsStepValid}
           />
         );

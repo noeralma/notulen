@@ -28,6 +28,10 @@ export interface LampiranItem {
   kesimpulanResiko?: string;
   tanggal?: string;
   penandatanganan?: string;
+  // Specific for Step 9 Technical Evaluation
+  scorePengalaman?: number;
+  scoreMetodologi?: number;
+  scoreTenagaAhli?: number;
 }
 
 export interface Step3Data {
@@ -60,6 +64,14 @@ export interface Step7Data {
   csmsDocuments?: Record<string, LampiranItem>;
 }
 
+export interface Step8Data {
+  qualificationDocuments?: Record<string, LampiranItem>;
+}
+
+export interface Step9Data {
+  technicalDocuments?: Record<string, LampiranItem>;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
@@ -68,6 +80,8 @@ export interface FormData {
   step5: Step5Data;
   step6: Step6Data;
   step7: Step7Data;
+  step8: Step8Data;
+  step9: Step9Data;
   // Will add other steps here later
 }
 
@@ -375,6 +389,44 @@ export const INITIAL_DATA: FormData = {
   step7: {
     csmsDocuments: {
       penilaianCsms: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step8: {
+    qualificationDocuments: {
+      kemampuanDasar: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      sisaKemampuanPaket: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      lainnya: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step9: {
+    technicalDocuments: {
+      kriteriaPenilaianTeknis: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+      subKriteriaEvaluasiTeknis: {
         isActive: false,
         existence: null,
         suitability: null,
