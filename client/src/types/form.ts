@@ -460,6 +460,12 @@ export const INITIAL_DATA: FormData = {
     jenisKontrak: "",
     othersDescription: "",
     contractDocuments: {
+      jenisKontrak: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
       draftKontrak: {
         isActive: false,
         existence: null,

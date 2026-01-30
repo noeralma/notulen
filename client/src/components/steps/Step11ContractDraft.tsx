@@ -108,8 +108,9 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
   useEffect(() => {
     const validateDocuments = (group?: Record<string, LampiranItem>) => {
       if (!group) return true;
-      return Object.values(group).every((item) => {
+      return Object.entries(group).every(([key, item]) => {
         if (!item.isActive) return true;
+        if (key === "jenisKontrak") return true;
         return item.existence && item.suitability;
       });
     };
@@ -128,7 +129,15 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
     onValidityChange,
   ]);
 
-  const getRowStatus = (item: LampiranItem) => {
+  const getRowStatus = (key: string, item: LampiranItem) => {
+    if (key === "jenisKontrak") {
+      if (!item.isActive) return "";
+      const isValid =
+        !!data.jenisKontrak &&
+        (data.jenisKontrak !== "Others" || !!data.othersDescription);
+      return isValid ? "Closed" : "Open";
+    }
+
     const cVal = item.isActive ? "√" : "X";
     const gVal =
       item.existence === "Ada"
@@ -261,119 +270,23 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
         </div>
 
         <div className="p-6 space-y-6">
-          <div className="space-y-4">
-            <label className="text-sm font-semibold text-slate-700 block">
-              Jenis Kontrak
-            </label>
-            <div className="grid grid-cols-1 gap-3">
-              {PROJECT_CONSTANTS.STEP11_CONSTANTS.JENIS_KONTRAK_OPTIONS.map(
-                (option) => {
-                  const hasInfo =
-                    option === "Lumsum" ||
-                    option === "Harga Satuan" ||
-                    option === "Gabungan: Harga Satuan & Lumsum";
-
-                  return (
-                    <div
-                      key={option}
-                      onClick={() => handleSelection(option)}
-                      className={`
-                        relative flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200
-                        ${
-                          data.jenisKontrak === option
-                            ? "border-blue-600 bg-blue-50/50"
-                            : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"
-                        }
-                      `}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`
-                            w-5 h-5 rounded-full border-2 flex items-center justify-center
-                            ${
-                              data.jenisKontrak === option
-                                ? "border-blue-600"
-                                : "border-slate-300"
-                            }
-                          `}
-                        >
-                          {data.jenisKontrak === option && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                          )}
-                        </div>
-                        <span
-                          className={`font-medium ${
-                            data.jenisKontrak === option
-                              ? "text-blue-900"
-                              : "text-slate-700"
-                          }`}
-                        >
-                          {option}
-                        </span>
-                      </div>
-
-                      {hasInfo && (
-                        <button
-                          onClick={(e) => showInfo(e, option)}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                          title="Lihat Keterangan"
-                        >
-                          <Info className="w-5 h-5" />
-                        </button>
-                      )}
-                    </div>
-                  );
-                },
-              )}
-            </div>
-          </div>
-
-          <AnimatePresence>
-            {data.jenisKontrak === "Others" && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="pt-2">
-                  <ValidatedInput
-                    id="others-description"
-                    label="Keterangan Lainnya"
-                    value={data.othersDescription || ""}
-                    onChange={(e) =>
-                      updateData({ othersDescription: e.target.value })
-                    }
-                    placeholder="Sebutkan jenis kontrak lainnya..."
-                    icon={FileText}
-                    required={data.jenisKontrak === "Others"}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Document List Section */}
-          <div className="pt-6 border-t border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">
-              Dokumen Kelengkapan
-            </h3>
-            <div className="space-y-4">
-              {PROJECT_CONSTANTS.STEP11_DOCUMENTS.map((doc) => {
-                const item = data.contractDocuments?.[doc.key] ||
-                  INITIAL_DATA.step11.contractDocuments?.[doc.key] || {
-                    isActive: false,
-                    existence: null,
-                    suitability: null,
-                    catatan: "",
-                  };
+          <div className="space-y-4">
+            {PROJECT_CONSTANTS.STEP11_DOCUMENTS.map((doc) => {
+              const item = data.contractDocuments?.[doc.key] ||
+                INITIAL_DATA.step11.contractDocuments?.[doc.key] || {
+                  isActive: false,
+                  existence: null,
+                  suitability: null,
+                  catatan: "",
+                };
 
-                const status = getRowStatus(item);
+              const status = getRowStatus(doc.key, item);
 
-                return (
-                  <div
-                    key={doc.key}
-                    className={`
+              return (
+                <div
+                  key={doc.key}
+                  className={`
                       p-4 rounded-xl border-2 transition-all duration-200
                       ${
                         item.isActive
@@ -381,11 +294,11 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                           : "border-slate-100 bg-slate-50"
                       }
                     `}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <div
-                          className={`
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <div
+                        className={`
                             w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors
                             ${
                               item.isActive
@@ -393,30 +306,30 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                 : "border-slate-300 bg-white"
                             }
                           `}
-                        >
-                          {item.isActive && (
-                            <CheckCircle2 className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={item.isActive}
-                          onChange={() => handleToggle(doc.key)}
-                        />
-                        <span
-                          className={`font-medium ${
-                            item.isActive ? "text-blue-900" : "text-slate-600"
-                          }`}
-                        >
-                          {doc.label}
-                        </span>
-                      </label>
+                      >
+                        {item.isActive && (
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={item.isActive}
+                        onChange={() => handleToggle(doc.key)}
+                      />
+                      <span
+                        className={`font-medium ${
+                          item.isActive ? "text-blue-900" : "text-slate-600"
+                        }`}
+                      >
+                        {doc.label}
+                      </span>
+                    </label>
 
-                      <div className="flex items-center gap-4">
-                        {status && (
-                          <span
-                            className={`
+                    <div className="flex items-center gap-4">
+                      {status && (
+                        <span
+                          className={`
                               px-3 py-1 rounded-full text-xs font-semibold
                               ${
                                 status === "Closed"
@@ -426,21 +339,117 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                     : "bg-red-100 text-red-700"
                               }
                             `}
-                          >
-                            {status}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {item.isActive && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="space-y-4 pt-2 border-t border-slate-200/60"
                         >
+                          {status}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <AnimatePresence>
+                    {item.isActive && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="space-y-4 pt-2 border-t border-slate-200/60"
+                      >
+                        {doc.key === "jenisKontrak" && (
+                          <div className="mb-6 p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                            <label className="text-sm font-semibold text-slate-700 block mb-3">
+                              Pilih Jenis Kontrak
+                            </label>
+                            <div className="grid grid-cols-1 gap-3">
+                              {PROJECT_CONSTANTS.STEP11_CONSTANTS.JENIS_KONTRAK_OPTIONS.map(
+                                (option) => {
+                                  const hasInfo =
+                                    option === "Lumsum" ||
+                                    option === "Harga Satuan" ||
+                                    option ===
+                                      "Gabungan: Harga Satuan & Lumsum";
+
+                                  return (
+                                    <div
+                                      key={option}
+                                      onClick={() => handleSelection(option)}
+                                      className={`
+                                          relative flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200
+                                          ${
+                                            data.jenisKontrak === option
+                                              ? "border-blue-600 bg-blue-50/50"
+                                              : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"
+                                          }
+                                        `}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <div
+                                          className={`
+                                              w-5 h-5 rounded-full border-2 flex items-center justify-center
+                                              ${
+                                                data.jenisKontrak === option
+                                                  ? "border-blue-600"
+                                                  : "border-slate-300"
+                                              }
+                                            `}
+                                        >
+                                          {data.jenisKontrak === option && (
+                                            <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                                          )}
+                                        </div>
+                                        <span
+                                          className={`font-medium ${
+                                            data.jenisKontrak === option
+                                              ? "text-blue-900"
+                                              : "text-slate-700"
+                                          }`}
+                                        >
+                                          {option}
+                                        </span>
+                                      </div>
+
+                                      {hasInfo && (
+                                        <button
+                                          onClick={(e) => showInfo(e, option)}
+                                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                          title="Lihat Keterangan"
+                                        >
+                                          <Info className="w-5 h-5" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  );
+                                },
+                              )}
+                            </div>
+                            <AnimatePresence>
+                              {data.jenisKontrak === "Others" && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="pt-2">
+                                    <ValidatedInput
+                                      id="others-description"
+                                      label="Keterangan Lainnya"
+                                      value={data.othersDescription || ""}
+                                      onChange={(e) =>
+                                        updateData({
+                                          othersDescription: e.target.value,
+                                        })
+                                      }
+                                      placeholder="Sebutkan jenis kontrak lainnya..."
+                                      icon={FileText}
+                                      required={data.jenisKontrak === "Others"}
+                                    />
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )}
+                        {doc.key !== "jenisKontrak" && (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Keberadaan Dokumen */}
                             <div className="space-y-2">
@@ -508,30 +517,30 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                               </div>
                             </div>
                           </div>
+                        )}
 
-                          <div className="pl-9 pt-4">
-                            <ValidatedInput
-                              id={`${doc.key}-catatan`}
-                              label="Catatan"
-                              value={item.catatan || ""}
-                              onChange={(e) =>
-                                handleDocumentUpdate(
-                                  doc.key,
-                                  "catatan",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Tambahkan catatan..."
-                              icon={StickyNote}
-                            />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-            </div>
+                        <div className="pl-9 pt-4">
+                          <ValidatedInput
+                            id={`${doc.key}-catatan`}
+                            label="Catatan"
+                            value={item.catatan || ""}
+                            onChange={(e) =>
+                              handleDocumentUpdate(
+                                doc.key,
+                                "catatan",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="Tambahkan catatan..."
+                            icon={StickyNote}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

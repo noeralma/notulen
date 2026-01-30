@@ -169,6 +169,9 @@ export const PROJECT_CONSTANTS = {
       "Merupakan Kontrak yang terdiri dari 2 jenis lingkup pekerjaan yang bersifat harga satuan dan lumsum. Pelaksanaan pekerjaan mengacu pada Bill of Quantities (BoQ) atau Bill of Material (BoM) yang tertuang dalam Kontrak, yang terdiri dari jenis pekerjaan yang bersifat lumsum dan satuan. Ketentuan untuk lingkup pekerjaan yang bersifat harga satuan mengikuti ketentuan dalam Kontrak Harga Satuan, sedangkan untuk lingkup pekerjaan yang bersifat lumsum mengikuti ketentuan dalam kontrak lumsum.",
     ],
   },
-  STEP11_DOCUMENTS: [{ key: "draftKontrak", label: "Draft Kontrak" }] as const,
+  STEP11_DOCUMENTS: [
+    { key: "jenisKontrak", label: "Jenis Kontrak" },
+    { key: "draftKontrak", label: "Draft Kontrak" },
+  ] as const,
   PROJECT_CONSTANTS_END: true,
 };
