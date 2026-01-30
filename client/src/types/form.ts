@@ -72,6 +72,16 @@ export interface Step9Data {
   technicalDocuments?: Record<string, LampiranItem>;
 }
 
+export interface Step10Data {
+  commercialDocuments?: Record<string, LampiranItem>;
+}
+
+export interface Step11Data {
+  jenisKontrak: string;
+  othersDescription?: string;
+  contractDocuments?: Record<string, LampiranItem>;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
@@ -82,6 +92,8 @@ export interface FormData {
   step7: Step7Data;
   step8: Step8Data;
   step9: Step9Data;
+  step10: Step10Data;
+  step11: Step11Data;
   // Will add other steps here later
 }
 
@@ -427,6 +439,28 @@ export const INITIAL_DATA: FormData = {
         catatan: "",
       },
       subKriteriaEvaluasiTeknis: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step10: {
+    commercialDocuments: {
+      kriteriaEvaluasiKomersial: {
+        isActive: false,
+        existence: null,
+        suitability: null,
+        catatan: "",
+      },
+    },
+  },
+  step11: {
+    jenisKontrak: "",
+    othersDescription: "",
+    contractDocuments: {
+      draftKontrak: {
         isActive: false,
         existence: null,
         suitability: null,

@@ -13,6 +13,8 @@ import type {
   Step7Data,
   Step8Data,
   Step9Data,
+  Step10Data,
+  Step11Data,
 } from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
@@ -24,6 +26,8 @@ import Step6FinancialAspects from "./steps/Step6FinancialAspects";
 import Step7Csms from "./steps/Step7Csms";
 import Step8SpecialQualification from "./steps/Step8SpecialQualification";
 import Step9TechnicalEvaluation from "./steps/Step9TechnicalEvaluation";
+import Step10CommercialEvaluation from "./steps/Step10CommercialEvaluation";
+import Step11ContractDraft from "./steps/Step11ContractDraft";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -95,6 +99,20 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep10Data = (data: Partial<Step10Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step10: { ...prev.step10, ...data },
+    }));
+  };
+
+  const updateStep11Data = (data: Partial<Step11Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step11: { ...prev.step11, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -117,6 +135,8 @@ const FormWizard: React.FC = () => {
   const currentStep7Data = formData.step7 || INITIAL_DATA.step7 || {};
   const currentStep8Data = formData.step8 || INITIAL_DATA.step8 || {};
   const currentStep9Data = formData.step9 || INITIAL_DATA.step9 || {};
+  const currentStep10Data = formData.step10 || INITIAL_DATA.step10 || {};
+  const currentStep11Data = formData.step11 || INITIAL_DATA.step11 || {};
 
   const handleNext = () => {
     if (isStepValid && currentStep < totalSteps) {
@@ -203,6 +223,22 @@ const FormWizard: React.FC = () => {
           <Step9TechnicalEvaluation
             data={currentStep9Data}
             updateData={updateStep9Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 10:
+        return (
+          <Step10CommercialEvaluation
+            data={currentStep10Data}
+            updateData={updateStep10Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 11:
+        return (
+          <Step11ContractDraft
+            data={currentStep11Data}
+            updateData={updateStep11Data}
             onValidityChange={setIsStepValid}
           />
         );

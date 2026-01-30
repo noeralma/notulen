@@ -139,5 +139,36 @@ export const PROJECT_CONSTANTS = {
       label: "Sub Kriteria Evaluasi Teknis (dalam hal evaluasi scoring)",
     },
   ] as const,
+  STEP10_TEXT: {
+    TITLE: "KRITERIA EVALUASI KOMERSIAL",
+  },
+  STEP10_DOCUMENTS: [
+    { key: "kriteriaEvaluasiKomersial", label: "Kriteria Evaluasi Komersial" },
+  ] as const,
+  STEP11_TEXT: {
+    TITLE: "RANCANGAN KONTRAK",
+  },
+  STEP11_CONSTANTS: {
+    JENIS_KONTRAK_OPTIONS: [
+      "Lumsum",
+      "Harga Satuan",
+      "Gabungan: Harga Satuan & Lumsum",
+      "Others",
+    ] as const,
+    INFO_LUMSUM: [
+      "Merupakan Kontrak penyediaan Barang/Jasa atas penyelesaian seluruh Pekerjaan sesuai gambar, spesifikasi, standar, dan ketentuan lain yang dipersyaratkan dalam Kontrak, dalam waktu tertentu dengan jumlah harga pasti. Semua konsekuensi yang mungkin terjadi dalam proses penyelesaian pekerjaan tersebut, sepanjang sesuai gambar, spesifikasi, standar, dan ketentuan lain yang dipersyaratkan dalam Kontrak, sepenuhnya ditanggung oleh Pelaksana Kontrak.",
+      "Pengurangan atau penambahan volume dan jenis pekerjaan dimungkinkan.",
+      "Pembayaran didasarkan kepada pencapaian penyelesaian tahapan/fisik Pekerjaan, baik secara penuh atau bertahap.",
+    ],
+    INFO_HARGA_SATUAN: [
+      "Merupakan Kontrak Pengadaan Barang/Jasa dalam batas waktu tertentu berdasarkan harga satuan yang pasti atau berupa formula penyesuaian harga satuan yang pasti untuk setiap satuan Barang/Jasa, peralatan dan/atau unsur pekerjaan dengan spesifikasi teknis tertentu",
+      "Pembayaran didasarkan pada jumlah Barang/Jasa yang diserahterimakan dari Pelaksana Kontrak kepada Pejabat Penandatangan Kontrak",
+      "Total nilai maksimal, jumlah barang/peralatan, atau volume pekerjaan dapat bersifat perkiraan sementara",
+    ],
+    INFO_GABUNGAN: [
+      "Merupakan Kontrak yang terdiri dari 2 jenis lingkup pekerjaan yang bersifat harga satuan dan lumsum. Pelaksanaan pekerjaan mengacu pada Bill of Quantities (BoQ) atau Bill of Material (BoM) yang tertuang dalam Kontrak, yang terdiri dari jenis pekerjaan yang bersifat lumsum dan satuan. Ketentuan untuk lingkup pekerjaan yang bersifat harga satuan mengikuti ketentuan dalam Kontrak Harga Satuan, sedangkan untuk lingkup pekerjaan yang bersifat lumsum mengikuti ketentuan dalam kontrak lumsum.",
+    ],
+  },
+  STEP11_DOCUMENTS: [{ key: "draftKontrak", label: "Draft Kontrak" }] as const,
   PROJECT_CONSTANTS_END: true,
 };
