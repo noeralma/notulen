@@ -145,7 +145,7 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
 
   const handleJaminanUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentDocs =

@@ -21,6 +21,8 @@ import type {
   Step15Data,
   Step16Data,
   Step17Data,
+  Step18Data,
+  Step19Data,
 } from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
@@ -40,6 +42,8 @@ import Step14ProsesPemilihan from "./steps/Step14ProsesPemilihan";
 import Step15RencanaJadwal from "./steps/Step15RencanaJadwal";
 import Step16ScheduleExecution from "./steps/Step16ScheduleExecution";
 import Step17Lainnya from "./steps/Step17Lainnya";
+import Step18HasilPembahasan from "./steps/Step18HasilPembahasan";
+import Step19Kesimpulan from "./steps/Step19Kesimpulan";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -167,6 +171,20 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep18Data = (data: Partial<Step18Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step18: { ...prev.step18, ...data },
+    }));
+  };
+
+  const updateStep19Data = (data: Partial<Step19Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step19: { ...prev.step19, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -197,6 +215,8 @@ const FormWizard: React.FC = () => {
   const currentStep15Data = formData.step15 || INITIAL_DATA.step15 || {};
   const currentStep16Data = formData.step16 || INITIAL_DATA.step16 || {};
   const currentStep17Data = formData.step17 || INITIAL_DATA.step17 || {};
+  const currentStep18Data = formData.step18 || INITIAL_DATA.step18 || {};
+  const currentStep19Data = formData.step19 || INITIAL_DATA.step19 || {};
 
   const handleNext = () => {
     if (isStepValid && currentStep < totalSteps) {
@@ -347,6 +367,23 @@ const FormWizard: React.FC = () => {
           <Step17Lainnya
             data={currentStep17Data}
             updateData={updateStep17Data}
+            onValidityChange={setIsStepValid}
+          />
+        );
+      case 18:
+        return (
+          <Step18HasilPembahasan
+            data={currentStep18Data}
+            updateData={updateStep18Data}
+            onValidityChange={setIsStepValid}
+            formData={formData}
+          />
+        );
+      case 19:
+        return (
+          <Step19Kesimpulan
+            data={currentStep19Data}
+            updateData={updateStep19Data}
             onValidityChange={setIsStepValid}
           />
         );

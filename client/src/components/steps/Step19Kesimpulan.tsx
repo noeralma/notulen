@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import type { Step17Data } from "../../types/form";
+import type { Step19Data } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 
-interface Step17Props {
-  data: Step17Data;
-  updateData: (data: Partial<Step17Data>) => void;
+interface Step19Props {
+  data: Step19Data;
+  updateData: (data: Partial<Step19Data>) => void;
   onValidityChange: (isValid: boolean) => void;
 }
 
-const Step17Lainnya: React.FC<Step17Props> = ({
+const Step19Kesimpulan: React.FC<Step19Props> = ({
   data,
   updateData,
   onValidityChange,
@@ -28,17 +28,17 @@ const Step17Lainnya: React.FC<Step17Props> = ({
       {/* Header */}
       <div className="bg-blue-600 p-4 text-white">
         <h2 className="text-xl font-bold mb-1">
-          {PROJECT_CONSTANTS.STEP17_TEXT.TITLE}
+          {PROJECT_CONSTANTS.STEP19_TEXT.TITLE}
         </h2>
         <p className="text-blue-100 opacity-90 text-sm">
-          Informasi tambahan terkait proses pengadaan.
+          Kesimpulan dan kesepakatan akhir.
         </p>
       </div>
 
       {/* Content */}
       <div className="p-5">
         <div className="space-y-6 mb-8">
-          {PROJECT_CONSTANTS.STEP17_TEXT.ITEMS.map((item) => (
+          {PROJECT_CONSTANTS.STEP19_TEXT.ITEMS.map((item) => (
             <div
               key={item.id}
               className="p-4 bg-slate-50 rounded-xl border border-slate-100"
@@ -51,15 +51,6 @@ const Step17Lainnya: React.FC<Step17Props> = ({
                   <p className="text-slate-800 font-medium leading-relaxed text-justify">
                     {item.text}
                   </p>
-                  {"subItems" in item && item.subItems && (
-                    <ol className="list-[lower-alpha] ml-5 mt-2 space-y-1 text-slate-700">
-                      {item.subItems.map((subItem, idx) => (
-                        <li key={idx} className="pl-1 text-justify">
-                          {subItem}
-                        </li>
-                      ))}
-                    </ol>
-                  )}
                 </div>
               </div>
             </div>
@@ -101,7 +92,7 @@ const Step17Lainnya: React.FC<Step17Props> = ({
                 data.read ? "text-green-800" : "text-slate-700"
               }`}
             >
-              {PROJECT_CONSTANTS.STEP17_TEXT.AGREEMENT_LABEL}
+              {PROJECT_CONSTANTS.STEP19_TEXT.AGREEMENT_LABEL}
             </h3>
           </div>
         </motion.div>
@@ -110,4 +101,4 @@ const Step17Lainnya: React.FC<Step17Props> = ({
   );
 };
 
-export default Step17Lainnya;
+export default Step19Kesimpulan;

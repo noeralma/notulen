@@ -17,6 +17,10 @@ export interface LampiranItem {
   existence: "Ada" | "Tidak Ada" | null;
   suitability: "Sesuai" | "Tidak Sesuai" | null;
   catatan?: string;
+  tindakLanjut?:
+    | "Dokumen yang harus dilengkapi"
+    | "Dokumen yang harus direvisi"
+    | "Penyesuaian pengisian SMART GEP";
   // Specific for Step 5 HSSE
   requirement?: "Dipersyaratkan" | "Tidak Dipersyaratkan" | null;
   riskLevel?: "Rendah" | "Menengah" | "Tinggi" | null;
@@ -88,6 +92,10 @@ export interface KeabsahanHpsData {
     existence: "Ada" | "Tidak Ada" | null;
     suitability: "Sesuai" | "Tidak Sesuai" | null;
     catatan?: string;
+    tindakLanjut?:
+      | "Dokumen yang harus dilengkapi"
+      | "Dokumen yang harus direvisi"
+      | "Penyesuaian pengisian SMART GEP";
   };
   dasarPembuatan: string;
   penandatangan: string;
@@ -130,6 +138,14 @@ export interface Step17Data {
   read: boolean;
 }
 
+export interface Step18Data {
+  read: boolean;
+}
+
+export interface Step19Data {
+  read: boolean;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
@@ -148,7 +164,8 @@ export interface FormData {
   step15: Step15Data;
   step16: Step16Data;
   step17: Step17Data;
-  // Will add other steps here later
+  step18: Step18Data;
+  step19: Step19Data;
 }
 
 export const INITIAL_DATA: FormData = {
@@ -660,6 +677,12 @@ export const INITIAL_DATA: FormData = {
     scheduleExecution: false,
   },
   step17: {
+    read: false,
+  },
+  step18: {
+    read: false,
+  },
+  step19: {
     read: false,
   },
 };

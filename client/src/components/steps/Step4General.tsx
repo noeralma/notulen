@@ -112,7 +112,7 @@ const Step4General: React.FC<Step4GeneralProps> = ({
 
   const handleDocumentUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentDocs =
@@ -388,6 +388,31 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handleDocumentUpdate(
+                                  doc.key,
+                                  "tindakLanjut",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <ValidatedInput
                             id={`${doc.key}-catatan`}
                             label="Catatan"

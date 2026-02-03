@@ -18,6 +18,12 @@ export const PROJECT_CONSTANTS = {
     AGREEMENT_LABEL: "Saya Mengerti dan Setuju",
     AGREEMENT_SUBTEXT: "Klik disini untuk menyetujui pernyataan diatas",
   },
+  STEP3_TEXT: {
+    TITLE: "PERMINTAAN PENGADAAN",
+  },
+  STEP4_TEXT: {
+    TITLE: "UMUM",
+  },
   LAMPIRAN_DOCUMENTS: [
     {
       key: "formulirRequest",
@@ -91,6 +97,9 @@ export const PROJECT_CONSTANTS = {
     { key: "formA2Tkdn", label: "Form A2 TKDN" },
     { key: "formMonitoringB1Tkdn", label: "Form Monitoring (B1) TKDN" },
   ] as const,
+  STEP6_TEXT: {
+    TITLE: "ASPEK KEUANGAN",
+  },
   STEP6_DOCUMENTS: [
     { key: "jaminanPelaksanaan", label: "Jaminan Pelaksanaan" },
     { key: "uangMuka", label: "Uang Muka" },
@@ -275,6 +284,7 @@ export const PROJECT_CONSTANTS = {
   },
   STEP17_TEXT: {
     TITLE: "LAINNYA",
+    AGREEMENT_LABEL: "Saya Mengerti dan Setuju",
     ITEMS: [
       {
         id: 1,
@@ -316,7 +326,33 @@ export const PROJECT_CONSTANTS = {
         ],
       },
     ],
-    AGREEMENT_LABEL: "Saya Telah Membaca dan Memahami Informasi Diatas",
   },
+  STEP19_TEXT: {
+    TITLE: "KESIMPULAN",
+    AGREEMENT_LABEL: "Saya Mengerti dan Setuju",
+    ITEMS: [
+      {
+        id: 1,
+        text: "Proses pemilihan penyedia akan dilaksanakan apabila dokumen termasuk pengisian SMART GEP sudah lengkap dan sesuai berdasarkan kesepakatan dalam notulen ini, serta telah dilakukan penginputan dan release PR di dalam aplikasi MySAP.",
+      },
+      {
+        id: 2,
+        text: "Penyampaian kekurangan, perbaikan dokumen permintaan (jika ada) dan perubahan usulan Penyedia Barang/Jasa (jika ada) agar disampaikan melalui aplikasi SMART GEP oleh Pengguna dimana seluruh DP3 dan dokumen pendukung yang di-attach ke dalam SMART GEP merupakan dokumen final sesuai hasil pembahasan dalam notulen ini.",
+      },
+      {
+        id: 3,
+        text: "Apabila poin 19.1 belum dipenuhi sesuai jadwal yang disepakati, maka jadwal pengadaan akan disesuaikan dan tanggal mulai pengadaannya mengacu pada tanggal diterimanya revisi dan kelengkapan dokumen permintaan.",
+      },
+      {
+        id: 4,
+        text: "Pengguna Barang/Jasa berkewajiban untuk memastikan ketersediaan anggaran (termasuk izin yang diperlukan) sebelum penandatanganan kontrak. Pengguna Barang/Jasa bertugas untuk menandatangani Kontrak, mengendalikan, mengawasi serta memeriksa pelaksanaan Kontrak termasuk pelaksanaan CSMS (apabila dipersyaratkan) dan/atau capaian TKDN (apabila dipersyaratkan), termasuk menerima hasil pekerjaan dan melakukan proses pembayaran atas hasil Pekerjaan serta melakukan evaluasi kinerja penyedia barang/jasa.",
+      },
+    ],
+  },
+  TINDAK_LANJUT_OPTIONS: [
+    "Dokumen yang harus dilengkapi",
+    "Dokumen yang harus direvisi",
+    "Penyesuaian pengisian SMART GEP",
+  ] as const,
   PROJECT_CONSTANTS_END: true,
 };

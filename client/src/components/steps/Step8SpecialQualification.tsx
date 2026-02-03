@@ -39,14 +39,14 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
       item.existence === "Ada"
         ? "√"
         : item.existence === "Tidak Ada"
-        ? "X"
-        : "";
+          ? "X"
+          : "";
     const jVal =
       item.suitability === "Sesuai"
         ? "√"
         : item.suitability === "Tidak Sesuai"
-        ? "X"
-        : "";
+          ? "X"
+          : "";
 
     if (!cVal || !gVal || !jVal) return "";
 
@@ -67,7 +67,7 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
 
   const handleDocumentUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentDocs =
@@ -184,8 +184,8 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
                             status === "Closed"
                               ? "bg-green-100 text-green-700 border-green-200"
                               : status === "Open"
-                              ? "bg-blue-100 text-blue-700 border-blue-200"
-                              : "bg-red-100 text-red-700 border-red-200"
+                                ? "bg-blue-100 text-blue-700 border-blue-200"
+                                : "bg-red-100 text-red-700 border-red-200"
                           }
                         `}
                       >
@@ -271,6 +271,31 @@ const Step8SpecialQualification: React.FC<Step8Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handleDocumentUpdate(
+                                  doc.key,
+                                  "tindakLanjut",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <ValidatedInput
                             id={`${doc.key}-catatan`}
                             label="Catatan"

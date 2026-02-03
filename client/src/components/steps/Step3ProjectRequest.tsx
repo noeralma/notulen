@@ -141,7 +141,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
   const handleLampiranUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentLampiran = data.lampiran || INITIAL_DATA.step3.lampiran;
@@ -179,7 +179,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
   const handleTkdnUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentTkdn = data.tkdn || INITIAL_DATA.step3.tkdn;
@@ -217,7 +217,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
   const handlePrMysapUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentPrMysap = data.prMysap || INITIAL_DATA.step3.prMysap;
@@ -491,6 +491,31 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
 
                         {/* Catatan */}
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handleLampiranUpdate(
+                                  doc.key,
+                                  "tindakLanjut" as any,
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <ValidatedInput
                             id={`${doc.key}-catatan`}
                             label="Catatan"
@@ -668,6 +693,31 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handleTkdnUpdate(
+                                  doc.key,
+                                  "tindakLanjut" as any,
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <ValidatedInput
                             id={`${doc.key}-catatan`}
                             label="Catatan"
