@@ -48,7 +48,7 @@ const Step17Lainnya: React.FC<Step17Props> = ({
                   {item.id}
                 </div>
                 <div className="flex-1">
-                  <p className="text-slate-800 font-medium leading-relaxed">
+                  <p className="text-slate-800 font-medium leading-relaxed text-justify">
                     {item.text}
                   </p>
                   {item.subItems && (
@@ -58,7 +58,7 @@ const Step17Lainnya: React.FC<Step17Props> = ({
                           <span className="text-slate-500 font-medium min-w-[1.5rem] text-right">
                             {String.fromCharCode(97 + index)}.
                           </span>
-                          <p className="text-slate-600 text-sm leading-relaxed">
+                          <p className="text-slate-600 text-sm leading-relaxed text-justify">
                             {subItem}
                           </p>
                         </div>
