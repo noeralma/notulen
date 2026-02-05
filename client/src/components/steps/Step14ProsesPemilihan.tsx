@@ -507,7 +507,7 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                       const match = text.match(/^(\(\d+\))\s+(.+)$/);
 
                       if (match) {
-                        const [_, number, content] = match;
+                        const [, number, content] = match;
                         return (
                           <div key={index} className="flex gap-2">
                             <span className="flex-shrink-0 min-w-[24px]">

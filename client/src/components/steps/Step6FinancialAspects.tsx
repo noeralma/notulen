@@ -84,7 +84,7 @@ const Step6FinancialAspects: React.FC<Step6Props> = ({
 
   const handleDocumentUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentDocs =

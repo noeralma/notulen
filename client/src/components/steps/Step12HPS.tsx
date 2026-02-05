@@ -160,9 +160,9 @@ const Step12HPS: React.FC<Step12Props> = ({
   };
 
   const handleKeabsahanUpdate = (
-    field: string,
-    value: any,
-    nestedField?: string,
+    field: keyof KeabsahanHpsData,
+    value: string | boolean | null,
+    nestedField?: keyof KeabsahanHpsData["angkaDanPenyebutan"],
   ) => {
     const current = data.keabsahanHps || INITIAL_DATA.step12.keabsahanHps;
     let updated = { ...current };
