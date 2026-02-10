@@ -5,3 +5,10 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Submission {
+  id        String   @id @default(cuid())
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

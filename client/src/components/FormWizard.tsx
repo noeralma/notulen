@@ -44,11 +44,18 @@ import Step16ScheduleExecution from "./steps/Step16ScheduleExecution";
 import Step17Lainnya from "./steps/Step17Lainnya";
 import Step18HasilPembahasan from "./steps/Step18HasilPembahasan";
 import Step19Kesimpulan from "./steps/Step19Kesimpulan";
+import { api } from "../lib/api";
 
 const FormWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
   const [isStepValid, setIsStepValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitId, setSubmitId] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [loadId, setLoadId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const totalSteps = PROJECT_CONSTANTS.TOTAL_STEPS;
 
@@ -229,6 +236,43 @@ const FormWizard: React.FC = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
       setIsStepValid(true); // Assume valid if going back to review (simplification)
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await api.post<{ status: string; data: { id: string } }>(
+        "/submissions",
+        formData,
+      );
+      setSubmitId(res.data.id);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Submission failed";
+      setSubmitError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLoad = async () => {
+    if (!loadId) return;
+    setIsLoading(true);
+    setLoadError(null);
+    try {
+      const res = await api.get<{ status: string; data: { data: FormData } }>(
+        `/submissions/${encodeURIComponent(loadId)}`,
+      );
+      setFormData(res.data.data);
+      setCurrentStep(1);
+      setIsStepValid(false);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Load failed";
+      setLoadError(msg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -419,6 +463,30 @@ const FormWizard: React.FC = () => {
             transition={{ duration: 0.5 }}
           />
         </div>
+        <div className="mt-4 flex items-center gap-2">
+          <input
+            value={loadId}
+            onChange={(e) => setLoadId(e.target.value)}
+            placeholder="Enter Submission ID"
+            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            onClick={handleLoad}
+            disabled={isLoading || !loadId}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              isLoading || !loadId
+                ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                : "bg-slate-800 text-white hover:bg-slate-900"
+            }`}
+          >
+            {isLoading ? "Loading..." : "Load"}
+          </button>
+        </div>
+        {loadError && (
+          <div className="mt-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-800">
+            {loadError}
+          </div>
+        )}
       </div>
 
       {/* Step Content */}
@@ -452,12 +520,12 @@ const FormWizard: React.FC = () => {
         )}
 
         <button
-          onClick={handleNext}
-          disabled={!isStepValid && currentStep < totalSteps}
+          onClick={currentStep === totalSteps ? handleSubmit : handleNext}
+          disabled={(!isStepValid && currentStep < totalSteps) || isSubmitting}
           className={`
             flex items-center px-8 py-3 rounded-lg font-bold shadow-md transition-all duration-200
             ${
-              !isStepValid && currentStep < totalSteps
+              (!isStepValid && currentStep < totalSteps) || isSubmitting
                 ? "bg-slate-300 text-slate-500 cursor-not-allowed"
                 : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5"
             }
@@ -466,7 +534,7 @@ const FormWizard: React.FC = () => {
           {currentStep === totalSteps ? (
             <>
               <Save className="w-5 h-5 mr-2" />
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </>
           ) : (
             <>
@@ -476,6 +544,20 @@ const FormWizard: React.FC = () => {
           )}
         </button>
       </div>
+      {currentStep === totalSteps && (
+        <div className="mt-4">
+          {submitId && (
+            <div className="p-4 rounded-lg bg-green-50 border border-green-200 text-green-800">
+              Submitted. ID: {submitId}
+            </div>
+          )}
+          {submitError && (
+            <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-800">
+              {submitError}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
