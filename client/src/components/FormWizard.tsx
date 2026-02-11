@@ -386,6 +386,7 @@ const FormWizard: React.FC = () => {
         return (
           <Step14ProsesPemilihan
             data={currentStep14Data}
+            step4Data={currentStep4Data}
             updateData={updateStep14Data}
             onValidityChange={setIsStepValid}
           />

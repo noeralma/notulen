@@ -13,6 +13,7 @@ import {
 import { ValidatedInput } from "../ui/ValidatedInput";
 import {
   type Step14Data,
+  type Step4Data,
   type LampiranItem,
   INITIAL_DATA,
 } from "../../types/form";
@@ -20,15 +21,24 @@ import { PROJECT_CONSTANTS } from "../../lib/constants";
 
 interface Step14Props {
   data: Step14Data;
+  step4Data: Step4Data;
   updateData: (data: Partial<Step14Data>) => void;
   onValidityChange: (isValid: boolean) => void;
 }
 
 const Step14ProsesPemilihan: React.FC<Step14Props> = ({
   data,
+  step4Data,
   updateData,
   onValidityChange,
 }) => {
+  // Sync judulPaket from Step 4
+  useEffect(() => {
+    if (step4Data?.judulPaket && step4Data.judulPaket !== data.judulPaket) {
+      updateData({ judulPaket: step4Data.judulPaket });
+    }
+  }, [step4Data?.judulPaket, data.judulPaket, updateData]);
+
   useEffect(() => {
     const validateDocuments = (group?: Record<string, LampiranItem>) => {
       if (!group) return true;
@@ -202,9 +212,10 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
             label="Judul Paket"
             value={data.judulPaket}
             onChange={(e) => updateData({ judulPaket: e.target.value })}
-            placeholder="Masukkan judul paket..."
+            placeholder="Judul paket akan muncul otomatis..."
             icon={FileText}
             required
+            disabled
           />
         </div>
 
