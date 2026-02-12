@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FileText, AlertCircle, Info } from "lucide-react";
+import { FileText, AlertCircle, Info, Plus, Trash2 } from "lucide-react";
 import type { FormData, LampiranItem, Step18Data } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 
@@ -22,6 +22,8 @@ interface DiscussionItem {
 }
 
 const Step18HasilPembahasan: React.FC<Step18Props> = ({
+  data,
+  updateData,
   formData,
   onValidityChange,
 }) => {
@@ -179,6 +181,24 @@ const Step18HasilPembahasan: React.FC<Step18Props> = ({
     return items;
   }, [formData]);
 
+  const handleAddSmartGep = () => {
+    updateData({
+      smartGepItems: [...(data.smartGepItems || []), ""],
+    });
+  };
+
+  const handleUpdateSmartGep = (index: number, value: string) => {
+    const newItems = [...(data.smartGepItems || [])];
+    newItems[index] = value;
+    updateData({ smartGepItems: newItems });
+  };
+
+  const handleRemoveSmartGep = (index: number) => {
+    const newItems = [...(data.smartGepItems || [])];
+    newItems.splice(index, 1);
+    updateData({ smartGepItems: newItems });
+  };
+
   const sections = [
     {
       title: "Dokumen yang harus dilengkapi:",
@@ -211,6 +231,57 @@ const Step18HasilPembahasan: React.FC<Step18Props> = ({
 
       <div className="p-6 space-y-8">
         {sections.map((section) => {
+          if (section.type === "Penyesuaian pengisian SMART GEP") {
+            const Icon = section.icon;
+            const smartGepItems = data.smartGepItems || [];
+
+            return (
+              <div key={section.title} className="space-y-4">
+                <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                  <Icon className={`w-5 h-5 text-${section.color}-600`} />
+                  {section.title}
+                </h3>
+
+                <div className="space-y-3">
+                  {smartGepItems.map((item, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) =>
+                          handleUpdateSmartGep(index, e.target.value)
+                        }
+                        placeholder="Masukkan poin penyesuaian..."
+                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                      />
+                      <button
+                        onClick={() => handleRemoveSmartGep(index)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Hapus baris"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={handleAddSmartGep}
+                    className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 rounded-lg transition-all"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Tambah Poin Penyesuaian
+                  </button>
+
+                  {smartGepItems.length === 0 && (
+                    <div className="text-slate-500 italic text-sm pl-2">
+                      Belum ada poin penyesuaian yang ditambahkan.
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
           const items = discussionItems.filter(
             (item) => item.type === section.type,
           );

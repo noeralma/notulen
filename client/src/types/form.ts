@@ -140,6 +140,7 @@ export interface Step17Data {
 
 export interface Step18Data {
   read: boolean;
+  smartGepItems: string[];
 }
 
 export interface Step19Data {
@@ -681,6 +682,7 @@ export const INITIAL_DATA: FormData = {
   },
   step18: {
     read: false,
+    smartGepItems: [],
   },
   step19: {
     read: false,
