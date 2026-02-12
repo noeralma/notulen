@@ -5,6 +5,7 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
+  Calendar,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -134,6 +135,14 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <FileText size={18} />
             {!isCollapsed && <span>Notulen</span>}
+          </button>
+          <button
+            onClick={() => onNavigate("jadwal")}
+            className={`w-full ${getLinkClasses("jadwal")}`}
+            title={isCollapsed ? "Jadwal" : ""}
+          >
+            <Calendar size={18} />
+            {!isCollapsed && <span>Jadwal</span>}
           </button>
         </div>
       </div>
