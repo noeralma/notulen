@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import {
   Calendar,
   AlertCircle,
@@ -286,7 +287,12 @@ const Jadwal: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
         {/* Top Controls */}
         <div className="bg-blue-600 p-4 text-white flex justify-between items-center shrink-0 z-50 relative">
@@ -294,7 +300,6 @@ const Jadwal: React.FC = () => {
             <Calendar className="w-6 h-6" />
             <div>
               <h1 className="text-xl font-bold">Jadwal Pengadaan</h1>
-              <p className="text-blue-100 text-sm">Timeline interaktif</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -481,7 +486,7 @@ const Jadwal: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
