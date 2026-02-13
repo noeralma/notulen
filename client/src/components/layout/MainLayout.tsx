@@ -38,7 +38,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         {/* Mobile overlay to close sidebar */}
         {isMobileOpen && (
           <div
-            className="md:hidden fixed inset-0 bg-black/40 z-40"
+            className="md:hidden fixed inset-0 bg-black/40 z-[90]"
             onClick={() => setIsMobileOpen(false)}
           />
         )}

@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={`
-        bg-blue-600 text-white min-h-screen flex flex-col fixed left-0 top-0 z-50
+        bg-blue-600 text-white min-h-screen flex flex-col fixed left-0 top-0 z-[100]
         transition-transform duration-300
         ${isCollapsed ? "w-20" : "w-56"}
         transform

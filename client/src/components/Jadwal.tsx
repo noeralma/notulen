@@ -6,6 +6,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Save,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 interface ScheduleItem {
@@ -126,6 +128,7 @@ const INITIAL_ITEMS: ScheduleItem[] = [
 const Jadwal: React.FC = () => {
   const [items, setItems] = useState<ScheduleItem[]>(INITIAL_ITEMS);
   const [viewDate, setViewDate] = useState(new Date());
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   // Helper to calculate duration between two dates
   const calculateDuration = (start: string, end: string): number => {
@@ -295,15 +298,15 @@ const Jadwal: React.FC = () => {
     >
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
         {/* Top Controls */}
-        <div className="bg-blue-600 p-4 text-white flex justify-between items-center shrink-0 z-50 relative">
+        <div className="bg-blue-600 p-4 text-white flex flex-col md:flex-row justify-between items-start md:items-center shrink-0 z-50 relative gap-4">
           <div className="flex items-center gap-3">
             <Calendar className="w-6 h-6" />
             <div>
               <h1 className="text-xl font-bold">Jadwal Pengadaan</h1>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center bg-blue-700 rounded-lg p-1">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center justify-between bg-blue-700 rounded-lg p-1 w-full sm:w-auto">
               <button
                 onClick={() =>
                   setViewDate(
@@ -328,7 +331,7 @@ const Jadwal: React.FC = () => {
                 <ChevronRight size={20} />
               </button>
             </div>
-            <button className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
+            <button className="flex items-center justify-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors w-full sm:w-auto">
               <Save size={16} />
               Simpan Jadwal
             </button>
@@ -341,9 +344,30 @@ const Jadwal: React.FC = () => {
             {/* Sticky Header Row */}
             <div className="flex sticky top-0 z-40 bg-slate-50 border-b border-slate-200 shadow-sm">
               {/* Top-Left Corner (Sticky Left + Sticky Top) */}
-              <div className="sticky left-0 z-50 w-[450px] shrink-0 border-r border-slate-200 p-3 font-bold text-slate-700 text-sm bg-slate-50 flex items-end justify-between shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                <span>Nama Tahapan & Jadwal</span>
-                <span className="text-xs font-normal text-slate-500">
+              <div
+                className={`sticky left-0 z-50 shrink-0 border-r border-slate-200 p-3 font-bold text-slate-700 text-sm bg-slate-50 flex items-end justify-between shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] transition-all duration-300 ${
+                  isMobileExpanded ? "w-[300px]" : "w-[80px]"
+                } md:w-[450px]`}
+              >
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <span className={isMobileExpanded ? "" : "hidden md:inline"}>
+                    Nama Tahapan
+                  </span>
+                </div>
+
+                {/* Mobile Toggle Button */}
+                <button
+                  onClick={() => setIsMobileExpanded(!isMobileExpanded)}
+                  className="md:hidden p-1 rounded-full hover:bg-slate-200 text-blue-600"
+                >
+                  {isMobileExpanded ? (
+                    <PanelLeftClose size={16} />
+                  ) : (
+                    <PanelLeftOpen size={16} />
+                  )}
+                </button>
+
+                <span className="text-xs font-normal text-slate-500 hidden md:inline">
                   Geser untuk melihat detail &rarr;
                 </span>
               </div>
@@ -388,12 +412,18 @@ const Jadwal: React.FC = () => {
                 className="flex border-b border-slate-100 hover:bg-slate-50 transition-colors group"
               >
                 {/* Left Card (Sticky Left) */}
-                <div className="sticky left-0 z-30 w-[450px] shrink-0 border-r border-slate-200 p-3 bg-white group-hover:bg-slate-50 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                <div
+                  className={`sticky left-0 z-30 shrink-0 border-r border-slate-200 p-3 bg-white group-hover:bg-slate-50 transition-all duration-300 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] ${
+                    isMobileExpanded ? "w-[300px]" : "w-[80px]"
+                  } md:w-[450px]`}
+                >
                   <div className="flex gap-2 mb-2">
                     <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                       {item.id}
                     </div>
-                    <div>
+                    <div
+                      className={isMobileExpanded ? "block" : "hidden md:block"}
+                    >
                       <div className="font-medium text-slate-800 text-sm leading-tight">
                         {item.title}
                       </div>
@@ -405,7 +435,11 @@ const Jadwal: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 mt-3">
+                  <div
+                    className={`grid grid-cols-3 gap-1 md:gap-2 mt-3 ${
+                      isMobileExpanded ? "block" : "hidden md:grid"
+                    }`}
+                  >
                     <div>
                       <label className="block text-[10px] uppercase text-slate-500 font-bold mb-1">
                         Mulai
