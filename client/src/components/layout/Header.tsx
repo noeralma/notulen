@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header
-      className={`h-16 bg-white shadow-sm flex items-center justify-between px-4 md:px-8 fixed top-0 right-0 z-40 transition-all duration-300 left-0 ${
+      className={`h-16 bg-white shadow-md border-b border-slate-200 flex items-center justify-between px-4 md:px-8 fixed top-0 right-0 z-40 transition-all duration-300 left-0 ${
         isCollapsed ? "md:left-20" : "md:left-56"
       }`}
     >

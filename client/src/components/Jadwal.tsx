@@ -298,7 +298,7 @@ const Jadwal: React.FC = () => {
     >
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
         {/* Top Controls */}
-        <div className="bg-blue-600 p-4 text-white flex flex-col md:flex-row justify-between items-start md:items-center shrink-0 z-50 relative gap-4">
+        <div className="bg-blue-600 p-4 text-white flex flex-col md:flex-row justify-between items-start md:items-center shrink-0 z-20 relative gap-4">
           <div className="flex items-center gap-3">
             <Calendar className="w-6 h-6" />
             <div>
@@ -342,10 +342,10 @@ const Jadwal: React.FC = () => {
         <div className="flex-1 overflow-auto relative scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
           <div className="min-w-max">
             {/* Sticky Header Row */}
-            <div className="flex sticky top-0 z-40 bg-slate-50 border-b border-slate-200 shadow-sm">
+            <div className="flex sticky top-0 z-20 bg-slate-50 border-b border-slate-200 shadow-sm">
               {/* Top-Left Corner (Sticky Left + Sticky Top) */}
               <div
-                className={`sticky left-0 z-50 shrink-0 border-r border-slate-200 p-3 font-bold text-slate-700 text-sm bg-slate-50 flex items-end justify-between shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] transition-all duration-300 ${
+                className={`sticky left-0 z-30 shrink-0 border-r border-slate-200 p-3 font-bold text-slate-700 text-sm bg-slate-50 flex items-end justify-between shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] transition-all duration-300 ${
                   isMobileExpanded ? "w-[300px]" : "w-[80px]"
                 } md:w-[450px]`}
               >
@@ -373,7 +373,7 @@ const Jadwal: React.FC = () => {
               </div>
 
               {/* Timeline Header (Sticky Top only) */}
-              <div className="flex flex-col bg-slate-50 z-40">
+              <div className="flex flex-col bg-slate-50 z-20">
                 {/* Weeks */}
                 <div className="flex border-b border-slate-200">
                   {weeks.map((week, idx) => (
