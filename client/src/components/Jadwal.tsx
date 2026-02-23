@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   AlertCircle,
@@ -9,6 +9,16 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import { api } from "../lib/api";
+
+interface SavedScheduleSummary {
+  id: string;
+  name: string | null;
+  year: number | null;
+  month: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface ScheduleItem {
   id: number;
@@ -129,6 +139,15 @@ const Jadwal: React.FC = () => {
   const [items, setItems] = useState<ScheduleItem[]>(INITIAL_ITEMS);
   const [viewDate, setViewDate] = useState(new Date());
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [reminderMessage, setReminderMessage] = useState<string | null>(null);
+  const [reminderTone, setReminderTone] = useState<"info" | "warn" | "danger">(
+    "info",
+  );
+  const [savedSchedules, setSavedSchedules] = useState<SavedScheduleSummary[]>(
+    [],
+  );
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Helper to calculate duration between two dates
   const calculateDuration = (start: string, end: string): number => {
@@ -289,6 +308,106 @@ const Jadwal: React.FC = () => {
     };
   };
 
+  const fetchSavedSchedules = async () => {
+    setLoadError(null);
+    try {
+      const res = await api.get<{
+        status: string;
+        data: SavedScheduleSummary[];
+      }>("/submissions/jadwal");
+      setSavedSchedules(res.data);
+    } catch (e) {
+      setLoadError("Gagal memuat jadwal tersimpan");
+    }
+  };
+
+  useEffect(() => {
+    fetchSavedSchedules();
+  }, []);
+
+  const applySavedSchedule = async (id: string) => {
+    setLoadError(null);
+    try {
+      const res = await api.get<{ status: string; data: any }>(
+        `/submissions/${id}`,
+      );
+      const submission = res.data;
+      if (
+        !submission ||
+        !submission.data ||
+        submission.data.type !== "jadwal"
+      ) {
+        setLoadError("Data jadwal tidak ditemukan");
+        return;
+      }
+      const payload = submission.data as {
+        name?: string;
+        year?: number;
+        month?: number;
+        items?: ScheduleItem[];
+      };
+      if (Array.isArray(payload.items)) {
+        setItems(payload.items);
+      }
+      if (
+        typeof payload.year === "number" &&
+        typeof payload.month === "number"
+      ) {
+        setViewDate(new Date(payload.year, payload.month - 1, 1));
+      }
+      if (payload.name && typeof payload.name === "string") {
+        setReminderTone("info");
+        setReminderMessage(
+          `Jadwal "${payload.name}" dimuat dari jadwal tersimpan`,
+        );
+      } else {
+        setReminderTone("info");
+        setReminderMessage("Jadwal tersimpan berhasil dimuat");
+      }
+    } catch (e) {
+      setLoadError("Gagal memuat jadwal tersimpan");
+    }
+  };
+
+  useEffect(() => {
+    if (!reminderMessage) return;
+    const timeout = setTimeout(() => {
+      setReminderMessage(null);
+    }, 4000);
+    return () => clearTimeout(timeout);
+  }, [reminderMessage]);
+
+  const handleSaveSchedule = async () => {
+    if (isSaving) return;
+    const name = window.prompt("Nama Jadwal", "Jadwal Pengadaan");
+    if (!name) return;
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setIsSaving(true);
+    setReminderMessage(null);
+    try {
+      const payload = {
+        type: "jadwal",
+        name: trimmed,
+        year: viewDate.getFullYear(),
+        month: viewDate.getMonth() + 1,
+        items,
+      };
+      await api.post<{ status: string; data: { id: string } }>(
+        "/submissions",
+        payload,
+      );
+      setReminderTone("info");
+      setReminderMessage(`Jadwal tersimpan sebagai "${trimmed}"`);
+      fetchSavedSchedules();
+    } catch (e) {
+      setReminderTone("danger");
+      setReminderMessage("Gagal menyimpan jadwal. Coba lagi.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -296,7 +415,7 @@ const Jadwal: React.FC = () => {
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)] relative">
         {/* Top Controls */}
         <div className="bg-blue-600 p-4 text-white flex flex-col md:flex-row justify-between items-start md:items-center shrink-0 z-20 relative gap-4">
           <div className="flex items-center gap-3">
@@ -305,7 +424,7 @@ const Jadwal: React.FC = () => {
               <h1 className="text-xl font-bold">Jadwal Pengadaan</h1>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-4 w-full md:w-auto">
             <div className="flex items-center justify-between bg-blue-700 rounded-lg p-1 w-full sm:w-auto">
               <button
                 onClick={() =>
@@ -331,10 +450,59 @@ const Jadwal: React.FC = () => {
                 <ChevronRight size={20} />
               </button>
             </div>
-            <button className="flex items-center justify-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors w-full sm:w-auto">
-              <Save size={16} />
-              Simpan Jadwal
-            </button>
+            <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:items-start">
+              <div className="flex flex-col items-stretch gap-1 w-full sm:w-[220px]">
+                <button
+                  onClick={handleSaveSchedule}
+                  disabled={isSaving}
+                  className="flex items-center justify-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed w-full h-10"
+                >
+                  <Save size={16} />
+                  {isSaving ? "Menyimpan..." : "Simpan Jadwal"}
+                </button>
+              </div>
+              <div className="flex flex-col gap-1 w-full sm:w-[260px]">
+                <select
+                  className="bg-white text-blue-700 text-xs rounded-lg px-2 py-1 w-full h-10"
+                  defaultValue=""
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    if (!id) return;
+                    applySavedSchedule(id);
+                  }}
+                >
+                  <option value="" disabled>
+                    Pilih jadwal tersimpan
+                  </option>
+                  {savedSchedules.map((s) => {
+                    const hasMonthYear = s.year && s.month;
+                    let label = s.name || "Tanpa nama";
+                    if (hasMonthYear) {
+                      const d = new Date(
+                        s.year as number,
+                        (s.month as number) - 1,
+                        1,
+                      );
+                      const monthLabel = d.toLocaleString("id-ID", {
+                        month: "short",
+                        year: "numeric",
+                      });
+                      label = `${label} • ${monthLabel}`;
+                    }
+                    return (
+                      <option key={s.id} value={s.id}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+                {loadError && (
+                  <span className="text-[11px] text-red-100 text-center">
+                    {loadError}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -519,6 +687,30 @@ const Jadwal: React.FC = () => {
             ))}
           </div>
         </div>
+        <AnimatePresence>
+          {reminderMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              transition={{ duration: 0.25 }}
+              className="absolute bottom-4 right-4 z-30"
+            >
+              <div
+                className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg max-w-xs shadow-lg ${
+                  reminderTone === "danger"
+                    ? "bg-red-500 text-red-50 border border-red-400/80"
+                    : reminderTone === "warn"
+                      ? "bg-amber-500 text-amber-50 border border-amber-400/80"
+                      : "bg-blue-600 text-blue-50 border border-blue-400/80"
+                }`}
+              >
+                <AlertCircle size={14} />
+                <span>{reminderMessage}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

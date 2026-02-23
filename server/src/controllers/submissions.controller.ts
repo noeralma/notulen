@@ -100,6 +100,100 @@ export const listSubmissions = async (
   }
 };
 
+export const listJadwalSubmissions = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    try {
+      const { default: prisma } = await import("../utils/prisma");
+      const items = await prisma.submission.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      });
+      const mapped = items
+        .map((item) => {
+          const data = item.data as unknown as {
+            type?: string;
+            name?: string;
+            year?: number;
+            month?: number;
+          };
+          if (!data || data.type !== "jadwal") {
+            return null;
+          }
+          return {
+            id: item.id,
+            name: typeof data.name === "string" ? data.name : null,
+            year: typeof data.year === "number" ? data.year : null,
+            month: typeof data.month === "number" ? data.month : null,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          };
+        })
+        .filter((v): v is {
+          id: string;
+          name: string | null;
+          year: number | null;
+          month: number | null;
+          createdAt: Date;
+          updatedAt: Date;
+        } => v !== null);
+      return res.json({ status: "success", data: mapped });
+    } catch {
+      const dataDir = path.resolve(process.cwd(), "server", "data");
+      const filePath = path.join(dataDir, "submissions.jsonl");
+      let result: Array<{
+        id: string;
+        name: string | null;
+        year: number | null;
+        month: number | null;
+        createdAt: string;
+        updatedAt: string;
+      }> = [];
+      try {
+        const content = await fs.readFile(filePath, "utf8");
+        const lines = content.trim().split("\n");
+        for (let i = lines.length - 1; i >= 0 && result.length < 50; i--) {
+          const obj = JSON.parse(lines[i]) as {
+            id: string;
+            createdAt: string;
+            updatedAt: string;
+            data?: {
+              type?: string;
+              name?: string;
+              year?: number;
+              month?: number;
+            };
+          };
+          if (!obj.data || obj.data.type !== "jadwal") {
+            continue;
+          }
+          result.push({
+            id: obj.id,
+            name:
+              obj.data.name && typeof obj.data.name === "string"
+                ? obj.data.name
+                : null,
+            year:
+              typeof obj.data.year === "number" ? obj.data.year : null,
+            month:
+              typeof obj.data.month === "number" ? obj.data.month : null,
+            createdAt: obj.createdAt,
+            updatedAt: obj.updatedAt,
+          });
+        }
+      } catch {
+        result = [];
+      }
+      return res.json({ status: "success", data: result });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getSubmissionById = async (
   req: Request,
   res: Response,
