@@ -4,7 +4,7 @@ import { Info, CheckCircle2, StickyNote } from "lucide-react";
 import type { Step5Data, LampiranItem } from "../../types/form";
 import { INITIAL_DATA } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
-import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 
 interface Step5Props {
   data: Step5Data;
@@ -456,16 +456,12 @@ const Step5ScopeOfWork: React.FC<Step5Props> = ({
                                 )}
                               </select>
                             </div>
-                            <ValidatedInput
+                            <RichTextNote
                               id={`${doc.key}-catatan`}
                               label="Catatan"
                               value={item.catatan || ""}
-                              onChange={(e) =>
-                                handleDocumentUpdate(
-                                  doc.key,
-                                  "catatan",
-                                  e.target.value,
-                                )
+                              onChange={(value) =>
+                                handleDocumentUpdate(doc.key, "catatan", value)
                               }
                               placeholder="Tambahkan catatan..."
                               icon={StickyNote}

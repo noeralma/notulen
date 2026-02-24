@@ -11,6 +11,7 @@ import {
   StickyNote,
 } from "lucide-react";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import {
   type Step14Data,
   type Step4Data,
@@ -24,6 +25,7 @@ interface Step14Props {
   step4Data: Step4Data;
   updateData: (data: Partial<Step14Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const Step14ProsesPemilihan: React.FC<Step14Props> = ({
@@ -31,8 +33,19 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
   step4Data,
   updateData,
   onValidityChange,
+  showErrors = false,
 }) => {
   // Sync judulPaket from Step 4
+  const isMetodePengadaanValid = Boolean(data.metodePengadaan);
+  const isKlasifikasiValid = Boolean(data.klasifikasiPengadaan);
+  const isMetodePemasukanValid = Boolean(data.metodePemasukanDokumen);
+  const isMetodeEvaluasiValid = Boolean(data.metodeEvaluasi);
+  const isMetodeEvaluasiLainnyaValid =
+    data.metodeEvaluasi !== "Lainnya:" ||
+    Boolean(data.metodeEvaluasiLainnya && data.metodeEvaluasiLainnya.trim());
+  const isDptValid = data.dpt.length > 0;
+  const isKualifikasiValid = data.kualifikasi.length > 0;
+
   useEffect(() => {
     if (step4Data?.judulPaket && step4Data.judulPaket !== data.judulPaket) {
       updateData({ judulPaket: step4Data.judulPaket });
@@ -50,18 +63,27 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
 
     const isValid =
       Boolean(data.judulPaket) &&
-      Boolean(data.metodePengadaan) &&
-      Boolean(data.klasifikasiPengadaan) &&
-      data.dpt.length > 0 &&
-      data.kualifikasi.length > 0 &&
-      Boolean(data.metodePemasukanDokumen) &&
-      Boolean(data.metodeEvaluasi) &&
-      (data.metodeEvaluasi !== "Lainnya:" ||
-        Boolean(data.metodeEvaluasiLainnya)) &&
+      isMetodePengadaanValid &&
+      isKlasifikasiValid &&
+      isDptValid &&
+      isKualifikasiValid &&
+      isMetodePemasukanValid &&
+      isMetodeEvaluasiValid &&
+      isMetodeEvaluasiLainnyaValid &&
       validateDocuments(data.prosesPemilihanDocuments) &&
       validateDocuments(data.jaminanDocuments);
     onValidityChange(isValid);
-  }, [data, onValidityChange]);
+  }, [
+    data,
+    onValidityChange,
+    isMetodePengadaanValid,
+    isKlasifikasiValid,
+    isMetodePemasukanValid,
+    isMetodeEvaluasiValid,
+    isMetodeEvaluasiLainnyaValid,
+    isDptValid,
+    isKualifikasiValid,
+  ]);
 
   const handleDptChange = (option: string) => {
     const current = data.dpt || [];
@@ -216,18 +238,25 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
             icon={FileText}
             required
             disabled
+            forceTouched={showErrors}
           />
         </div>
 
         {/* Metode Pengadaan */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 mb-2">
             <ListFilter className="w-5 h-5 text-blue-600" />
             <label className="text-sm font-bold text-slate-700">
               Metode Pengadaan <span className="text-red-500">*</span>
             </label>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+              showErrors && !isMetodePengadaanValid
+                ? "ring-2 ring-red-400 rounded-xl p-1"
+                : ""
+            }`}
+          >
             {PROJECT_CONSTANTS.STEP14_CONSTANTS.METODE_PENGADAAN.map(
               (option) => (
                 <label
@@ -264,17 +293,28 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
               ),
             )}
           </div>
+          {showErrors && !isMetodePengadaanValid && (
+            <p className="text-xs text-red-600 mt-1">
+              Pilih salah satu Metode Pengadaan.
+            </p>
+          )}
         </div>
 
         {/* Klasifikasi Pengadaan */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 mb-2">
             <LayoutGrid className="w-5 h-5 text-blue-600" />
             <label className="text-sm font-bold text-slate-700">
               Klasifikasi Pengadaan <span className="text-red-500">*</span>
             </label>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+              showErrors && !isKlasifikasiValid
+                ? "ring-2 ring-red-400 rounded-xl p-1"
+                : ""
+            }`}
+          >
             {PROJECT_CONSTANTS.STEP14_CONSTANTS.KLASIFIKASI_PENGADAAN.map(
               (option) => (
                 <label
@@ -311,10 +351,15 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
               ),
             )}
           </div>
+          {showErrors && !isKlasifikasiValid && (
+            <p className="text-xs text-red-600 mt-1">
+              Pilih salah satu Klasifikasi Pengadaan.
+            </p>
+          )}
         </div>
 
         {/* Metode Pemasukan Dokumen Penawaran */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 mb-2">
             <ListFilter className="w-5 h-5 text-blue-600" />
             <label className="text-sm font-bold text-slate-700">
@@ -322,7 +367,13 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
               <span className="text-red-500">*</span>
             </label>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+              showErrors && !isMetodePemasukanValid
+                ? "ring-2 ring-red-400 rounded-xl p-1"
+                : ""
+            }`}
+          >
             {PROJECT_CONSTANTS.STEP14_CONSTANTS.METODE_PEMASUKAN_DOKUMEN.map(
               (option) => (
                 <label
@@ -359,17 +410,28 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
               ),
             )}
           </div>
+          {showErrors && !isMetodePemasukanValid && (
+            <p className="text-xs text-red-600 mt-1">
+              Pilih Metode Pemasukan Dokumen Penawaran.
+            </p>
+          )}
         </div>
 
         {/* Metode Evaluasi */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 mb-2">
             <ListFilter className="w-5 h-5 text-blue-600" />
             <label className="text-sm font-bold text-slate-700">
               Metode Evaluasi <span className="text-red-500">*</span>
             </label>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+              showErrors && !isMetodeEvaluasiValid
+                ? "ring-2 ring-red-400 rounded-xl p-1"
+                : ""
+            }`}
+          >
             {PROJECT_CONSTANTS.STEP14_CONSTANTS.METODE_EVALUASI.map(
               (option) => (
                 <label
@@ -406,6 +468,11 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
               ),
             )}
           </div>
+          {showErrors && !isMetodeEvaluasiValid && (
+            <p className="text-xs text-red-600 mt-1">
+              Pilih salah satu Metode Evaluasi.
+            </p>
+          )}
           {data.metodeEvaluasi === "Lainnya:" && (
             <div className="mt-2">
               <ValidatedInput
@@ -418,6 +485,7 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                 placeholder="Masukkan metode evaluasi..."
                 icon={FileText}
                 required
+                forceTouched={showErrors}
               />
             </div>
           )}
@@ -431,14 +499,20 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* DPT */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <Users className="w-5 h-5 text-blue-600" />
                 <label className="text-sm font-bold text-slate-700">
                   DPT <span className="text-red-500">*</span>
                 </label>
               </div>
-              <div className="space-y-3">
+              <div
+                className={`space-y-3 ${
+                  showErrors && !isDptValid
+                    ? "ring-2 ring-red-400 rounded-xl p-2"
+                    : ""
+                }`}
+              >
                 {PROJECT_CONSTANTS.STEP14_CONSTANTS.DPT_OPTIONS.map(
                   (option) => (
                     <label
@@ -465,17 +539,28 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                   ),
                 )}
               </div>
+              {showErrors && !isDptValid && (
+                <p className="text-xs text-red-600 mt-1">
+                  Pilih minimal satu opsi DPT.
+                </p>
+              )}
             </div>
 
             {/* Kualifikasi */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="w-5 h-5 text-blue-600" />
                 <label className="text-sm font-bold text-slate-700">
                   Kualifikasi <span className="text-red-500">*</span>
                 </label>
               </div>
-              <div className="space-y-3">
+              <div
+                className={`space-y-3 ${
+                  showErrors && !isKualifikasiValid
+                    ? "ring-2 ring-red-400 rounded-xl p-2"
+                    : ""
+                }`}
+              >
                 {PROJECT_CONSTANTS.STEP14_CONSTANTS.KUALIFIKASI_OPTIONS.map(
                   (option) => (
                     <label
@@ -502,6 +587,11 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                   ),
                 )}
               </div>
+              {showErrors && !isKualifikasiValid && (
+                <p className="text-xs text-red-600 mt-1">
+                  Pilih minimal satu Kualifikasi.
+                </p>
+              )}
             </div>
           </div>
 
@@ -629,12 +719,17 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                         className="overflow-hidden"
                       >
                         <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                          {/* Existence */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Ketersediaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -660,14 +755,24 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
-                          {/* Suitability */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -693,21 +798,24 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
                         {/* Catatan */}
                         <div className="pl-9 pt-4">
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}
@@ -809,12 +917,17 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                         className="overflow-hidden"
                       >
                         <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                          {/* Existence */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Ketersediaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -840,14 +953,24 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
-                          {/* Suitability */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -873,21 +996,24 @@ const Step14ProsesPemilihan: React.FC<Step14Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
                         {/* Catatan */}
                         <div className="pl-9 pt-4">
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleJaminanUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleJaminanUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

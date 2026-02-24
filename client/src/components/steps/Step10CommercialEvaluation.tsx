@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, StickyNote } from "lucide-react";
-import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import {
   type Step10Data,
   type LampiranItem,
@@ -296,16 +296,12 @@ const Step10CommercialEvaluation: React.FC<Step10Props> = ({
                               )}
                             </select>
                           </div>
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

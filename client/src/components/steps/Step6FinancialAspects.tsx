@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, StickyNote } from "lucide-react";
 import type { Step6Data, LampiranItem } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
-import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import { INITIAL_DATA } from "../../types/form";
 
 interface Step6Props {
@@ -284,16 +284,12 @@ const Step6FinancialAspects: React.FC<Step6Props> = ({
                               )}
                             </select>
                           </div>
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

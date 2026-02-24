@@ -56,6 +56,7 @@ const FormWizard: React.FC = () => {
   const [loadId, setLoadId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [showStepError, setShowStepError] = useState(false);
 
   const totalSteps = PROJECT_CONSTANTS.TOTAL_STEPS;
 
@@ -226,20 +227,32 @@ const FormWizard: React.FC = () => {
   const currentStep19Data = formData.step19 || INITIAL_DATA.step19 || {};
 
   const handleNext = () => {
-    if (isStepValid && currentStep < totalSteps) {
-      setCurrentStep((prev) => prev + 1);
-      setIsStepValid(false); // Reset for next step
+    if (currentStep >= totalSteps) return;
+
+    if (!isStepValid) {
+      setShowStepError(true);
+      return;
     }
+
+    setCurrentStep((prev) => prev + 1);
+    setIsStepValid(false);
+    setShowStepError(false);
   };
 
   const handlePrev = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
-      setIsStepValid(true); // Assume valid if going back to review (simplification)
+      setIsStepValid(true);
+      setShowStepError(false);
     }
   };
 
   const handleSubmit = async () => {
+    if (!isStepValid) {
+      setShowStepError(true);
+      return;
+    }
+
     if (isSubmitting) return;
     setIsSubmitting(true);
     setSubmitError(null);
@@ -284,6 +297,7 @@ const FormWizard: React.FC = () => {
             data={formData.step1}
             updateData={updateStep1Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 2:
@@ -300,6 +314,7 @@ const FormWizard: React.FC = () => {
             data={currentStep3Data}
             updateData={updateStep3Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 4:
@@ -308,6 +323,7 @@ const FormWizard: React.FC = () => {
             data={currentStep4Data}
             updateData={updateStep4Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 5:
@@ -332,6 +348,7 @@ const FormWizard: React.FC = () => {
             data={currentStep7Data}
             updateData={updateStep7Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 8:
@@ -364,6 +381,7 @@ const FormWizard: React.FC = () => {
             data={currentStep11Data}
             updateData={updateStep11Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 12:
@@ -372,6 +390,7 @@ const FormWizard: React.FC = () => {
             data={currentStep12Data}
             updateData={updateStep12Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 13:
@@ -389,6 +408,7 @@ const FormWizard: React.FC = () => {
             step4Data={currentStep4Data}
             updateData={updateStep14Data}
             onValidityChange={setIsStepValid}
+            showErrors={showStepError && !isStepValid}
           />
         );
       case 15:
@@ -503,7 +523,6 @@ const FormWizard: React.FC = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Footer */}
       <div
         className={`
           mt-8 flex items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100
@@ -519,14 +538,13 @@ const FormWizard: React.FC = () => {
             Previous
           </button>
         )}
-
         <button
           onClick={currentStep === totalSteps ? handleSubmit : handleNext}
-          disabled={(!isStepValid && currentStep < totalSteps) || isSubmitting}
+          disabled={currentStep === totalSteps && isSubmitting}
           className={`
             flex items-center px-8 py-3 rounded-lg font-bold shadow-md transition-all duration-200
             ${
-              (!isStepValid && currentStep < totalSteps) || isSubmitting
+              currentStep === totalSteps && isSubmitting
                 ? "bg-slate-300 text-slate-500 cursor-not-allowed"
                 : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5"
             }

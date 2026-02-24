@@ -8,17 +8,20 @@ import {
 } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 
 interface Step4GeneralProps {
   data: Step4Data;
   updateData: (data: Partial<Step4Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const Step4General: React.FC<Step4GeneralProps> = ({
   data,
   updateData,
   onValidityChange,
+  showErrors = false,
 }) => {
   const {
     judulPaket,
@@ -27,6 +30,8 @@ const Step4General: React.FC<Step4GeneralProps> = ({
     penggunaBarangJasaNotes,
     generalDocuments,
   } = data;
+
+  const isPenggunaValid = penggunaBarangJasa !== "";
 
   useEffect(() => {
     const validateDocuments = (group?: Record<string, LampiranItem>) => {
@@ -41,7 +46,7 @@ const Step4General: React.FC<Step4GeneralProps> = ({
 
     const isValid =
       judulPaket.trim() !== "" &&
-      penggunaBarangJasa !== "" &&
+      isPenggunaValid &&
       picPenggunaBarangJasa.trim() !== "" &&
       isGeneralDocumentsValid;
 
@@ -52,6 +57,7 @@ const Step4General: React.FC<Step4GeneralProps> = ({
     picPenggunaBarangJasa,
     generalDocuments,
     onValidityChange,
+    isPenggunaValid,
   ]);
 
   const handleChange = (field: keyof Step4Data, value: string) => {
@@ -151,14 +157,21 @@ const Step4General: React.FC<Step4GeneralProps> = ({
             placeholder="Masukkan Judul Paket"
             icon={Type}
             required
+            forceTouched={showErrors}
           />
 
           {/* Pengguna Barang/Jasa */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label className="block text-sm font-medium text-slate-700">
               Pengguna Barang/Jasa
             </label>
-            <div className="flex flex-wrap gap-4">
+            <div
+              className={`flex flex-wrap gap-4 ${
+                showErrors && !isPenggunaValid
+                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                  : ""
+              }`}
+            >
               {PROJECT_CONSTANTS.STEP4_CONSTANTS.PENGGUNA_BARANG_JASA_OPTIONS.map(
                 (option) => (
                   <label
@@ -195,6 +208,11 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                 ),
               )}
             </div>
+            {showErrors && !isPenggunaValid && (
+              <p className="text-xs text-red-600 mt-1">
+                Pilih salah satu Pengguna Barang/Jasa.
+              </p>
+            )}
 
             <AnimatePresence initial={false}>
               {penggunaBarangJasa !== "" && (
@@ -231,6 +249,7 @@ const Step4General: React.FC<Step4GeneralProps> = ({
             placeholder="Masukkan Nama PIC"
             icon={User}
             required
+            forceTouched={showErrors}
           />
         </div>
 
@@ -326,7 +345,15 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                             <span className="text-sm font-medium text-slate-600">
                               Ketersediaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors &&
+                                item.isActive &&
+                                !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -352,13 +379,26 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors &&
+                                item.isActive &&
+                                !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -384,6 +424,13 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
@@ -413,16 +460,12 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                               )}
                             </select>
                           </div>
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

@@ -10,12 +10,14 @@ import {
 import type { Step7Data, LampiranItem } from "../../types/form";
 import { PROJECT_CONSTANTS } from "../../lib/constants";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import { INITIAL_DATA } from "../../types/form";
 
 interface Step7Props {
   data: Step7Data;
   updateData: (data: Partial<Step7Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -486,16 +488,12 @@ const Step7Csms: React.FC<Step7Props> = ({
                               )}
                             </select>
                           </div>
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

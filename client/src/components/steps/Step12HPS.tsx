@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, StickyNote } from "lucide-react";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import {
   type Step12Data,
   type LampiranItem,
@@ -14,13 +15,23 @@ interface Step12Props {
   data: Step12Data;
   updateData: (data: Partial<Step12Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const Step12HPS: React.FC<Step12Props> = ({
   data,
   updateData,
   onValidityChange,
+  showErrors = false,
 }) => {
+  const keabsahanData = data.keabsahanHps || INITIAL_DATA.step12.keabsahanHps;
+
+  const isNilaiHpsValid = !!keabsahanData.nilaiHps;
+  const isMataUangValid =
+    !!keabsahanData.mataUang &&
+    (keabsahanData.mataUang !== "Other" ||
+      !!keabsahanData.mataUangOther?.trim());
+
   useEffect(() => {
     const validateDocuments = (group?: Record<string, LampiranItem>) => {
       if (!group) return true;
@@ -51,12 +62,10 @@ const Step12HPS: React.FC<Step12Props> = ({
     };
 
     const isDocsValid = validateDocuments(data.hpsDocuments);
-    const isKeabsahanValid = validateKeabsahan(
-      data.keabsahanHps || INITIAL_DATA.step12.keabsahanHps,
-    );
+    const isKeabsahanValid = validateKeabsahan(keabsahanData);
 
     onValidityChange(isDocsValid && isKeabsahanValid);
-  }, [data.hpsDocuments, data.keabsahanHps, onValidityChange]);
+  }, [data.hpsDocuments, data.keabsahanHps, onValidityChange, keabsahanData]);
 
   const getRowStatus = (item: LampiranItem) => {
     const cVal = item.isActive ? "√" : "X";
@@ -179,7 +188,6 @@ const Step12HPS: React.FC<Step12Props> = ({
     updateData({ keabsahanHps: updated });
   };
 
-  const keabsahanData = data.keabsahanHps || INITIAL_DATA.step12.keabsahanHps;
   const keabsahanStatus = getKeabsahanStatus(keabsahanData);
 
   return (
@@ -280,12 +288,17 @@ const Step12HPS: React.FC<Step12Props> = ({
                         className="space-y-4 pt-2 border-t border-slate-200/60"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Keberadaan Dokumen */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Keberadaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -311,14 +324,24 @@ const Step12HPS: React.FC<Step12Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
-                          {/* Kesesuaian Dokumen */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -344,20 +367,23 @@ const Step12HPS: React.FC<Step12Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
                         <div className="pl-9 pt-4">
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}
@@ -450,7 +476,15 @@ const Step12HPS: React.FC<Step12Props> = ({
                           <span className="text-sm font-medium text-slate-600">
                             Keberadaan Dokumen
                           </span>
-                          <div className="flex gap-4">
+                          <div
+                            className={`flex gap-4 ${
+                              showErrors &&
+                              keabsahanData.isActive &&
+                              !keabsahanData.angkaDanPenyebutan.existence
+                                ? "ring-2 ring-red-400 rounded-xl p-2"
+                                : ""
+                            }`}
+                          >
                             {["Ada", "Tidak Ada"].map((opt) => (
                               <label
                                 key={opt}
@@ -479,13 +513,28 @@ const Step12HPS: React.FC<Step12Props> = ({
                               </label>
                             ))}
                           </div>
+                          {showErrors &&
+                            keabsahanData.isActive &&
+                            !keabsahanData.angkaDanPenyebutan.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih keberadaan dokumen.
+                              </p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
                           <span className="text-sm font-medium text-slate-600">
                             Kesesuaian Dokumen
                           </span>
-                          <div className="flex gap-4">
+                          <div
+                            className={`flex gap-4 ${
+                              showErrors &&
+                              keabsahanData.isActive &&
+                              !keabsahanData.angkaDanPenyebutan.suitability
+                                ? "ring-2 ring-red-400 rounded-xl p-2"
+                                : ""
+                            }`}
+                          >
                             {["Sesuai", "Tidak Sesuai"].map((opt) => (
                               <label
                                 key={opt}
@@ -514,6 +563,13 @@ const Step12HPS: React.FC<Step12Props> = ({
                               </label>
                             ))}
                           </div>
+                          {showErrors &&
+                            keabsahanData.isActive &&
+                            !keabsahanData.angkaDanPenyebutan.suitability && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih kesesuaian dokumen.
+                              </p>
+                            )}
                         </div>
                       </div>
                       <div className="space-y-2 mb-4">
@@ -543,14 +599,14 @@ const Step12HPS: React.FC<Step12Props> = ({
                           )}
                         </select>
                       </div>
-                      <ValidatedInput
+                      <RichTextNote
                         id="keabsahan-angka-catatan"
                         label="Catatan"
                         value={keabsahanData.angkaDanPenyebutan.catatan || ""}
-                        onChange={(e) =>
+                        onChange={(value) =>
                           handleKeabsahanUpdate(
                             "angkaDanPenyebutan",
-                            e.target.value,
+                            value,
                             "catatan",
                           )
                         }
@@ -569,6 +625,7 @@ const Step12HPS: React.FC<Step12Props> = ({
                       }
                       placeholder="Masukkan dasar pembuatan..."
                       required
+                      forceTouched={showErrors}
                     />
 
                     {/* Penandatangan */}
@@ -581,14 +638,21 @@ const Step12HPS: React.FC<Step12Props> = ({
                       }
                       placeholder="Masukkan penandatangan..."
                       required
+                      forceTouched={showErrors}
                     />
 
                     {/* Nilai HPS */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <label className="block text-sm font-semibold text-slate-700">
                         Nilai HPS <span className="text-red-500">*</span>
                       </label>
-                      <div className="flex gap-4">
+                      <div
+                        className={`flex gap-4 ${
+                          showErrors && !isNilaiHpsValid
+                            ? "ring-2 ring-red-400 rounded-xl p-2"
+                            : ""
+                        }`}
+                      >
                         {PROJECT_CONSTANTS.STEP12_CONSTANTS.KEABSAHAN_OPTIONS.NILAI_HPS.map(
                           (opt) => (
                             <label
@@ -615,15 +679,26 @@ const Step12HPS: React.FC<Step12Props> = ({
                           ),
                         )}
                       </div>
+                      {showErrors && !isNilaiHpsValid && (
+                        <p className="text-xs text-red-600 mt-1">
+                          Pilih salah satu Nilai HPS.
+                        </p>
+                      )}
                     </div>
 
                     {/* Mata Uang */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <label className="block text-sm font-semibold text-slate-700">
                         Mata Uang <span className="text-red-500">*</span>
                       </label>
                       <div className="flex flex-col gap-2">
-                        <div className="flex gap-4">
+                        <div
+                          className={`flex gap-4 ${
+                            showErrors && !isMataUangValid
+                              ? "ring-2 ring-red-400 rounded-xl p-2"
+                              : ""
+                          }`}
+                        >
                           {PROJECT_CONSTANTS.STEP12_CONSTANTS.KEABSAHAN_OPTIONS.MATA_UANG.map(
                             (opt) => (
                               <label
@@ -650,6 +725,11 @@ const Step12HPS: React.FC<Step12Props> = ({
                             ),
                           )}
                         </div>
+                        {showErrors && !isMataUangValid && (
+                          <p className="text-xs text-red-600 mt-1">
+                            Pilih salah satu Mata Uang.
+                          </p>
+                        )}
                         {keabsahanData.mataUang === "Other" && (
                           <div className="pl-6">
                             <ValidatedInput
@@ -663,6 +743,7 @@ const Step12HPS: React.FC<Step12Props> = ({
                               }
                               placeholder="Sebutkan mata uang..."
                               required
+                              forceTouched={showErrors}
                             />
                           </div>
                         )}
@@ -754,12 +835,17 @@ const Step12HPS: React.FC<Step12Props> = ({
                         className="space-y-4 pt-2 border-t border-slate-200/60"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Keberadaan Dokumen */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Keberadaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -785,14 +871,24 @@ const Step12HPS: React.FC<Step12Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
-                          {/* Kesesuaian Dokumen */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -818,20 +914,23 @@ const Step12HPS: React.FC<Step12Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
                         <div className="pl-9 pt-4">
-                          <ValidatedInput
-                            id={`${doc.key}-catatan`}
+                          <RichTextNote
+                            id={`${doc.key}-catatan-bottom`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleDocumentUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleDocumentUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

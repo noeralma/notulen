@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, X, FileText, CheckCircle2, StickyNote } from "lucide-react";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import {
   type Step11Data,
   type LampiranItem,
@@ -13,6 +14,7 @@ interface Step11Props {
   data: Step11Data;
   updateData: (data: Partial<Step11Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const InfoModal = ({
@@ -100,10 +102,15 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
   data,
   updateData,
   onValidityChange,
+  showErrors = false,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<readonly string[]>([]);
   const [modalTitle, setModalTitle] = useState("");
+
+  const isContractValid =
+    !!data.jenisKontrak &&
+    (data.jenisKontrak !== "Others" || !!data.othersDescription);
 
   useEffect(() => {
     const validateDocuments = (group?: Record<string, LampiranItem>) => {
@@ -115,10 +122,6 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
       });
     };
 
-    const isContractValid =
-      !!data.jenisKontrak &&
-      (data.jenisKontrak !== "Others" || !!data.othersDescription);
-
     const isDocsValid = validateDocuments(data.contractDocuments);
 
     onValidityChange(isContractValid && isDocsValid);
@@ -127,6 +130,7 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
     data.othersDescription,
     data.contractDocuments,
     onValidityChange,
+    isContractValid,
   ]);
 
   const getRowStatus = (key: string, item: LampiranItem) => {
@@ -359,7 +363,16 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                           className="space-y-4 pt-2 border-t border-slate-200/60"
                         >
                           {doc.key === "jenisKontrak" && (
-                            <div className="mb-6 p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                            <div
+                              className={`
+                                mb-6 p-4 bg-white rounded-lg border shadow-sm
+                                ${
+                                  showErrors && !isContractValid
+                                    ? "border-red-300 ring-2 ring-red-400"
+                                    : "border-slate-200"
+                                }
+                              `}
+                            >
                               <label className="text-sm font-semibold text-slate-700 block mb-3">
                                 Pilih Jenis Kontrak
                               </label>
@@ -425,6 +438,12 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                   },
                                 )}
                               </div>
+                              {showErrors && !isContractValid && (
+                                <p className="text-xs text-red-600 mt-2">
+                                  Pilih salah satu Jenis Kontrak dan lengkapi
+                                  keterangan jika memilih Others.
+                                </p>
+                              )}
                               <AnimatePresence>
                                 {data.jenisKontrak === "Others" && (
                                   <motion.div
@@ -448,6 +467,7 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                         required={
                                           data.jenisKontrak === "Others"
                                         }
+                                        forceTouched={showErrors}
                                       />
                                     </div>
                                   </motion.div>
@@ -457,12 +477,19 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                           )}
                           {doc.key !== "jenisKontrak" && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {/* Keberadaan Dokumen */}
                               <div className="space-y-2">
                                 <span className="text-sm font-medium text-slate-600">
                                   Keberadaan Dokumen
                                 </span>
-                                <div className="flex gap-4">
+                                <div
+                                  className={`flex gap-4 ${
+                                    showErrors &&
+                                    item.isActive &&
+                                    !item.existence
+                                      ? "ring-2 ring-red-400 rounded-xl p-2"
+                                      : ""
+                                  }`}
+                                >
                                   {["Ada", "Tidak Ada"].map((opt) => (
                                     <label
                                       key={opt}
@@ -488,14 +515,28 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                     </label>
                                   ))}
                                 </div>
+                                {showErrors &&
+                                  item.isActive &&
+                                  !item.existence && (
+                                    <p className="text-xs text-red-600 mt-1">
+                                      Pilih keberadaan dokumen.
+                                    </p>
+                                  )}
                               </div>
 
-                              {/* Kesesuaian Dokumen */}
                               <div className="space-y-2">
                                 <span className="text-sm font-medium text-slate-600">
                                   Kesesuaian Dokumen
                                 </span>
-                                <div className="flex gap-4">
+                                <div
+                                  className={`flex gap-4 ${
+                                    showErrors &&
+                                    item.isActive &&
+                                    !item.suitability
+                                      ? "ring-2 ring-red-400 rounded-xl p-2"
+                                      : ""
+                                  }`}
+                                >
                                   {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                     <label
                                       key={opt}
@@ -521,6 +562,13 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                     </label>
                                   ))}
                                 </div>
+                                {showErrors &&
+                                  item.isActive &&
+                                  !item.suitability && (
+                                    <p className="text-xs text-red-600 mt-1">
+                                      Pilih kesesuaian dokumen.
+                                    </p>
+                                  )}
                               </div>
                             </div>
                           )}
@@ -551,16 +599,12 @@ const Step11ContractDraft: React.FC<Step11Props> = ({
                                 )}
                               </select>
                             </div>
-                            <ValidatedInput
+                            <RichTextNote
                               id={`${doc.key}-catatan`}
                               label="Catatan"
                               value={item.catatan || ""}
-                              onChange={(e) =>
-                                handleDocumentUpdate(
-                                  doc.key,
-                                  "catatan",
-                                  e.target.value,
-                                )
+                              onChange={(value) =>
+                                handleDocumentUpdate(doc.key, "catatan", value)
                               }
                               placeholder="Tambahkan catatan..."
                               icon={StickyNote}

@@ -302,9 +302,10 @@ const Step18HasilPembahasan: React.FC<Step18Props> = ({
                         key={`${item.id}-${index}`}
                         className="text-slate-700 pl-2"
                       >
-                        <div className="font-medium text-slate-900">
-                          {item.text}
-                        </div>
+                        <div
+                          className="font-medium text-slate-900 text-sm leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: item.text }}
+                        />
                         <div className="text-xs text-slate-500 mt-1 flex flex-wrap gap-2">
                           <span className="bg-white px-2 py-1 rounded border border-slate-200">
                             Step: {item.sourceStep}

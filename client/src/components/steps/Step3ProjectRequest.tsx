@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, CheckCircle2, User, StickyNote } from "lucide-react";
 import { ValidatedInput } from "../ui/ValidatedInput";
+import { RichTextNote } from "../ui/RichTextNote";
 import {
   type Step3Data,
   type LampiranItem,
@@ -13,24 +14,26 @@ interface Step3Props {
   data: Step3Data;
   updateData: (data: Partial<Step3Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const Step3ProjectRequest: React.FC<Step3Props> = ({
   data,
   updateData,
   onValidityChange,
+  showErrors = false,
 }) => {
   const [nameError, setNameError] = useState<string | null>(null);
   const [dateError, setDateError] = useState<string | null>(null);
   const [isTouched, setIsTouched] = useState(false);
+
+  const isProjectTypeValid = !!data.projectType;
 
   useEffect(() => {
     const validateStep = () => {
       const isNameValid = (data.nama?.trim().length ?? 0) > 0;
       const isCreatedDateValid = !!data.createdDate;
       const isApprovedDateValid = !!data.approvedDate;
-      const isProjectTypeValid = !!data.projectType;
-
       let isDateOrderValid = true;
       if (data.createdDate && data.approvedDate) {
         if (new Date(data.approvedDate) < new Date(data.createdDate)) {
@@ -44,7 +47,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
       }
 
       if (!data.nama || data.nama.trim().length === 0) {
-        if (isTouched) setNameError("Name is required");
+        if (isTouched || showErrors) setNameError("This field is required");
       } else {
         setNameError(null);
       }
@@ -73,7 +76,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
     };
 
     validateStep();
-  }, [data, onValidityChange]);
+  }, [data, onValidityChange, isTouched, showErrors, isProjectTypeValid]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateData({ nama: e.target.value });
@@ -253,11 +256,17 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
           </h3>
 
           {/* Project Type Selection */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700">
               Project Type <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-6">
+            <div
+              className={`flex gap-6 ${
+                showErrors && !isProjectTypeValid
+                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                  : ""
+              }`}
+            >
               {PROJECT_CONSTANTS.PROJECT_TYPES.map((type) => (
                 <label
                   key={type}
@@ -296,6 +305,11 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                 </label>
               ))}
             </div>
+            {showErrors && !isProjectTypeValid && (
+              <p className="text-xs text-red-600 mt-1">
+                Pilih salah satu Project Type.
+              </p>
+            )}
           </div>
 
           {/* Nama Input */}
@@ -308,6 +322,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
             icon={User}
             required
             error={nameError}
+            forceTouched={showErrors}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -320,6 +335,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
               onChange={(e) => updateData({ createdDate: e.target.value })}
               icon={Calendar}
               required
+              forceTouched={showErrors}
             />
 
             {/* Approved Date */}
@@ -332,6 +348,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
               icon={Calendar}
               required
               error={dateError}
+              forceTouched={showErrors}
             />
           </div>
         </div>
@@ -422,12 +439,17 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                         className="overflow-hidden"
                       >
                         <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                          {/* Existence */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Ketersediaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -453,14 +475,24 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
-                          {/* Suitability */}
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -486,6 +518,13 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
@@ -516,16 +555,12 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                               )}
                             </select>
                           </div>
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleLampiranUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleLampiranUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}
@@ -631,7 +666,13 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                             <span className="text-sm font-medium text-slate-600">
                               Ketersediaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -657,13 +698,24 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -689,6 +741,13 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
@@ -718,16 +777,12 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                               )}
                             </select>
                           </div>
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handleTkdnUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handleTkdnUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}
@@ -833,7 +888,13 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                             <span className="text-sm font-medium text-slate-600">
                               Ketersediaan Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.existence
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Ada", "Tidak Ada"].map((opt) => (
                                 <label
                                   key={opt}
@@ -859,13 +920,24 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors && item.isActive && !item.existence && (
+                              <p className="text-xs text-red-600 mt-1">
+                                Pilih ketersediaan dokumen.
+                              </p>
+                            )}
                           </div>
 
                           <div className="space-y-2">
                             <span className="text-sm font-medium text-slate-600">
                               Kesesuaian Dokumen
                             </span>
-                            <div className="flex gap-4">
+                            <div
+                              className={`flex gap-4 ${
+                                showErrors && item.isActive && !item.suitability
+                                  ? "ring-2 ring-red-400 rounded-xl p-2"
+                                  : ""
+                              }`}
+                            >
                               {["Sesuai", "Tidak Sesuai"].map((opt) => (
                                 <label
                                   key={opt}
@@ -891,20 +963,23 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                                 </label>
                               ))}
                             </div>
+                            {showErrors &&
+                              item.isActive &&
+                              !item.suitability && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Pilih kesesuaian dokumen.
+                                </p>
+                              )}
                           </div>
                         </div>
 
                         <div className="pl-9 pt-4">
-                          <ValidatedInput
+                          <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
                             value={item.catatan || ""}
-                            onChange={(e) =>
-                              handlePrMysapUpdate(
-                                doc.key,
-                                "catatan",
-                                e.target.value,
-                              )
+                            onChange={(value) =>
+                              handlePrMysapUpdate(doc.key, "catatan", value)
                             }
                             placeholder="Tambahkan catatan..."
                             icon={StickyNote}

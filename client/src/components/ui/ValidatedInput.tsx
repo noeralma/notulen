@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, CheckCircle2, type LucideIcon } from "lucide-react";
 
-interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface ValidatedInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   icon?: LucideIcon;
   error?: string | null;
   required?: boolean;
+  forceTouched?: boolean;
 }
 
 export const ValidatedInput: React.FC<ValidatedInputProps> = ({
@@ -18,6 +20,7 @@ export const ValidatedInput: React.FC<ValidatedInputProps> = ({
   required = false,
   error: externalError,
   onBlur,
+  forceTouched = false,
   ...props
 }) => {
   const [touched, setTouched] = useState(false);
@@ -25,13 +28,16 @@ export const ValidatedInput: React.FC<ValidatedInputProps> = ({
   const val = (value as string) || "";
   const isFilled = val.trim().length > 0;
 
+  const effectiveTouched = touched || forceTouched;
+
   // Error logic:
   // 1. External error provided -> Show it.
   // 2. Required, Touched, and Empty -> Show "Required field".
-  const showError = externalError || (required && touched && !isFilled);
+  const showError =
+    externalError || (required && effectiveTouched && !isFilled);
   const errorMessage =
     externalError ||
-    (required && touched && !isFilled ? "Required field" : null);
+    (required && effectiveTouched && !isFilled ? "This field is required" : null);
 
   // Valid logic:
   // Not showing error AND filled.

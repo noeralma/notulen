@@ -9,12 +9,14 @@ interface Props {
   data: Step1Data;
   updateData: (data: Partial<Step1Data>) => void;
   onValidityChange: (isValid: boolean) => void;
+  showErrors?: boolean;
 }
 
 const Step1Commitment: React.FC<Props> = ({
   data,
   updateData,
   onValidityChange,
+  showErrors = false,
 }) => {
   const [touched, setTouched] = useState(false);
 
@@ -25,6 +27,12 @@ const Step1Commitment: React.FC<Props> = ({
   useEffect(() => {
     onValidityChange(isValid);
   }, [isValid, onValidityChange]);
+
+  useEffect(() => {
+    if (showErrors && !touched) {
+      setTouched(true);
+    }
+  }, [showErrors, touched]);
 
   const toggleCheckbox = (key: keyof Step1Data) => {
     setTouched(true);
@@ -131,6 +139,7 @@ const Step1Commitment: React.FC<Props> = ({
                   placeholder="Sebutkan lainnya..."
                   icon={FileText}
                   required
+                  forceTouched={showErrors}
                 />
               </motion.div>
             )}
