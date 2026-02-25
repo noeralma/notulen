@@ -111,21 +111,30 @@ export const RichTextNote: React.FC<RichTextNoteProps> = ({
           <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => applyFormat("bold")}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applyFormat("bold");
+              }}
               className="px-1.5 py-0.5 text-xs font-semibold rounded hover:bg-slate-200 text-slate-700"
             >
               B
             </button>
             <button
               type="button"
-              onClick={() => applyFormat("italic")}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applyFormat("italic");
+              }}
               className="px-1.5 py-0.5 text-xs rounded hover:bg-slate-200 text-slate-700 italic"
             >
               I
             </button>
             <button
               type="button"
-              onClick={() => applyFormat("underline")}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applyFormat("underline");
+              }}
               className="px-1.5 py-0.5 text-xs rounded hover:bg-slate-200 text-slate-700 underline"
             >
               U
@@ -133,14 +142,20 @@ export const RichTextNote: React.FC<RichTextNoteProps> = ({
             <span className="mx-1 h-4 w-px bg-slate-300" />
             <button
               type="button"
-              onClick={() => applyFormat("insertUnorderedList")}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applyFormat("insertUnorderedList");
+              }}
               className="px-1.5 py-0.5 text-xs rounded hover:bg-slate-200 text-slate-700"
             >
               •
             </button>
             <button
               type="button"
-              onClick={() => applyFormat("insertOrderedList")}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applyFormat("insertOrderedList");
+              }}
               className="px-1.5 py-0.5 text-[11px] rounded hover:bg-slate-200 text-slate-700"
             >
               1.
@@ -148,7 +163,10 @@ export const RichTextNote: React.FC<RichTextNoteProps> = ({
             <span className="mx-1 h-4 w-px bg-slate-300" />
             <button
               type="button"
-              onClick={cycleAlignment}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cycleAlignment();
+              }}
               className="px-1.5 py-0.5 text-[11px] rounded hover:bg-slate-200 text-slate-700"
             >
               {alignMode === "left" ? "L" : alignMode === "center" ? "C" : "R"}
@@ -163,7 +181,7 @@ export const RichTextNote: React.FC<RichTextNoteProps> = ({
             onInput={handleInput}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="min-h-[80px] max-h-[260px] overflow-y-auto px-3 py-2 text-sm text-slate-800 focus:outline-none whitespace-pre-wrap"
+            className="min-h-[80px] max-h-[260px] overflow-y-auto px-3 py-2 text-sm text-slate-800 focus:outline-none whitespace-pre-wrap [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
           />
           {isEmpty && !isFocused && (
             <div className="pointer-events-none absolute inset-x-3 top-2 text-xs text-slate-400">

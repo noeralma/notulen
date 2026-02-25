@@ -1,7 +1,7 @@
 export const PROJECT_CONSTANTS = {
   EXPECTED_NAME:
     "Pengadaan Jasa Teknis Operasional LNG Trading dan Transportasi",
-  TOTAL_STEPS: 19,
+  TOTAL_STEPS: 20,
   PROJECT_TYPES: ["Baseline", "Non-Baseline"] as const,
   MANDATORY_FIELDS_STEP1: [
     { key: "videoClsr", label: "Video CLSR" },
@@ -40,7 +40,7 @@ export const PROJECT_CONSTANTS = {
     { key: "formA2", label: "Form A2" },
     { key: "formMonitoringB1", label: "Form Monitoring (B1)" },
     { key: "rancanganKontrak", label: "Rancangan Kontrak" },
-    { key: "dokumenKpeTeknis", label: "Dokumen KPE Teknis" },
+    { key: "dokumenKpeTeknis", label: "Konsep KPE Teknis" },
     { key: "dokumenRfi", label: "Dokumen RFI" },
   ] as const,
   PR_MYSAP_DOCUMENTS: [
@@ -348,6 +348,9 @@ export const PROJECT_CONSTANTS = {
         text: "Pengguna Barang/Jasa berkewajiban untuk memastikan ketersediaan anggaran (termasuk izin yang diperlukan) sebelum penandatanganan kontrak. Pengguna Barang/Jasa bertugas untuk menandatangani Kontrak, mengendalikan, mengawasi serta memeriksa pelaksanaan Kontrak termasuk pelaksanaan CSMS (apabila dipersyaratkan) dan/atau capaian TKDN (apabila dipersyaratkan), termasuk menerima hasil pekerjaan dan melakukan proses pembayaran atas hasil Pekerjaan serta melakukan evaluasi kinerja penyedia barang/jasa.",
       },
     ],
+  },
+  STEP20_TEXT: {
+    TITLE: "REVIEW SUBMISSION",
   },
   TINDAK_LANJUT_OPTIONS: [
     "Dokumen yang harus dilengkapi",

@@ -23,6 +23,7 @@ import type {
   Step17Data,
   Step18Data,
   Step19Data,
+  Step20Data,
 } from "../types/form";
 import { PROJECT_CONSTANTS } from "../lib/constants";
 import Step1Commitment from "./steps/Step1Commitment";
@@ -44,6 +45,7 @@ import Step16ScheduleExecution from "./steps/Step16ScheduleExecution";
 import Step17Lainnya from "./steps/Step17Lainnya";
 import Step18HasilPembahasan from "./steps/Step18HasilPembahasan";
 import Step19Kesimpulan from "./steps/Step19Kesimpulan";
+import Step20ReviewSubmission from "./steps/Step20ReviewSubmission";
 import { api } from "../lib/api";
 
 const FormWizard: React.FC = () => {
@@ -193,6 +195,13 @@ const FormWizard: React.FC = () => {
     }));
   };
 
+  const updateStep20Data = (data: Partial<Step20Data>) => {
+    setFormData((prev) => ({
+      ...prev,
+      step20: { ...prev.step20, ...data },
+    }));
+  };
+
   // Ensure step3 data exists (handling HMR or legacy state)
   // We don't block render with null anymore, just initialize if missing
   const currentStep3Data = formData.step3 ||
@@ -225,6 +234,7 @@ const FormWizard: React.FC = () => {
   const currentStep17Data = formData.step17 || INITIAL_DATA.step17 || {};
   const currentStep18Data = formData.step18 || INITIAL_DATA.step18 || {};
   const currentStep19Data = formData.step19 || INITIAL_DATA.step19 || {};
+  const currentStep20Data = formData.step20 || INITIAL_DATA.step20 || {};
 
   const handleNext = () => {
     if (currentStep >= totalSteps) return;
@@ -450,6 +460,15 @@ const FormWizard: React.FC = () => {
             data={currentStep19Data}
             updateData={updateStep19Data}
             onValidityChange={setIsStepValid}
+          />
+        );
+      case 20:
+        return (
+          <Step20ReviewSubmission
+            data={currentStep20Data}
+            updateData={updateStep20Data}
+            onValidityChange={setIsStepValid}
+            formData={formData}
           />
         );
       default:

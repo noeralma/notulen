@@ -147,6 +147,10 @@ export interface Step19Data {
   read: boolean;
 }
 
+export interface Step20Data {
+  read: boolean;
+}
+
 export interface FormData {
   step1: Step1Data;
   step2: Step2Data;
@@ -167,6 +171,7 @@ export interface FormData {
   step17: Step17Data;
   step18: Step18Data;
   step19: Step19Data;
+  step20: Step20Data;
 }
 
 export const INITIAL_DATA: FormData = {
@@ -685,6 +690,9 @@ export const INITIAL_DATA: FormData = {
     smartGepItems: [],
   },
   step19: {
+    read: false,
+  },
+  step20: {
     read: false,
   },
 };
