@@ -144,7 +144,6 @@ export const PROJECT_CONSTANTS = {
   STEP8_DOCUMENTS: [
     { key: "kemampuanDasar", label: "Kemampuan Dasar (KD)" },
     { key: "sisaKemampuanPaket", label: "Sisa Kemampuan Paket (SKP)" },
-    { key: "lainnya", label: "Lainnya" },
   ] as const,
   STEP9_TEXT: {
     TITLE: "KRITERIA EVALUASI TEKNIS",

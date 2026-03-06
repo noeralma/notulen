@@ -6,37 +6,65 @@ interface FetchOptions extends RequestInit {
 
 export const api = {
   get: async <T>(endpoint: string, options?: FetchOptions): Promise<T> => {
-    const res = await fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-    });
+    try {
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...options?.headers,
+        },
+      });
 
-    if (!res.ok) {
-      throw new Error(`API Error: ${res.statusText}`);
+      if (!res.ok) {
+        // Try to parse error message from JSON response
+        try {
+          const errorData = await res.json();
+          throw new Error(errorData.message || `API Error: ${res.statusText}`);
+        } catch (jsonError) {
+          // If JSON parsing fails or it was the jsonError itself
+          if (jsonError instanceof Error && jsonError.message.startsWith("API Error")) {
+            throw jsonError;
+          }
+           throw new Error(`API Error: ${res.statusText}`);
+        }
+      }
+
+      return res.json();
+    } catch (error) {
+       console.error("API GET Error:", error);
+       throw error;
     }
-
-    return res.json();
   },
 
   post: async <T>(endpoint: string, body: unknown, options?: FetchOptions): Promise<T> => {
-    const res = await fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-      body: JSON.stringify(body),
-    });
+    try {
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...options?.headers,
+        },
+        body: JSON.stringify(body),
+      });
 
-    if (!res.ok) {
-      throw new Error(`API Error: ${res.statusText}`);
+      if (!res.ok) {
+         try {
+          const errorData = await res.json();
+          throw new Error(errorData.message || `API Error: ${res.statusText}`);
+        } catch (jsonError) {
+           if (jsonError instanceof Error && jsonError.message.startsWith("API Error")) {
+            throw jsonError;
+          }
+           throw new Error(`API Error: ${res.statusText}`);
+        }
+      }
+
+      return res.json();
+    } catch (error) {
+      console.error("API POST Error:", error);
+      throw error;
     }
-
-    return res.json();
   },
 };

@@ -508,12 +508,6 @@ export const INITIAL_DATA: FormData = {
         suitability: null,
         catatan: "",
       },
-      lainnya: {
-        isActive: false,
-        existence: null,
-        suitability: null,
-        catatan: "",
-      },
     },
   },
   step9: {

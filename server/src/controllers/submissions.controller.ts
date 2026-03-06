@@ -33,7 +33,11 @@ export const createSubmission = async (
         status: "success",
         data: created,
       });
-    } catch {
+    } catch (dbError) {
+      console.warn(
+        "Database create failed, falling back to file system",
+        dbError,
+      );
       const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const record = {
         id,
@@ -41,10 +45,34 @@ export const createSubmission = async (
         updatedAt: new Date().toISOString(),
         data: payload,
       };
-      const dataDir = path.resolve(process.cwd(), "data");
-      const filePath = path.join(dataDir, "submissions.jsonl");
-      await fs.mkdir(dataDir, { recursive: true });
-      await fs.appendFile(filePath, JSON.stringify(record) + "\n", "utf8");
+
+      // Try multiple possible paths for the data directory
+      const possiblePaths = [
+        path.resolve(process.cwd(), "data"),
+        path.resolve(process.cwd(), "server", "data"),
+        path.resolve(__dirname, "../../data"),
+        path.resolve(__dirname, "../../../data"),
+      ];
+
+      // Try to write to the first path that works or create the first one
+      let written = false;
+      for (const dir of possiblePaths) {
+        try {
+          await fs.mkdir(dir, { recursive: true });
+          const filePath = path.join(dir, "submissions.jsonl");
+          await fs.appendFile(filePath, JSON.stringify(record) + "\n", "utf8");
+          written = true;
+          break;
+        } catch (err) {
+          console.warn(`Failed to write to ${dir}:`, err);
+          continue;
+        }
+      }
+
+      if (!written) {
+        throw new Error("Failed to save submission to any fallback location");
+      }
+
       return res.status(201).json({
         status: "success",
         data: {
@@ -74,25 +102,47 @@ export const listSubmissions = async (
         take: 50,
       });
       return res.json({ status: "success", data: items });
-    } catch {
-      const dataDir = path.resolve(process.cwd(), "data");
-      const filePath = path.join(dataDir, "submissions.jsonl");
+    } catch (dbError) {
+      console.warn(
+        "Database list failed, falling back to file system",
+        dbError,
+      );
+
+      // Try multiple possible paths for the data directory
+      const possiblePaths = [
+        path.resolve(process.cwd(), "data"),
+        path.resolve(process.cwd(), "server", "data"),
+        path.resolve(__dirname, "../../data"),
+        path.resolve(__dirname, "../../../data"),
+      ];
+
       let result: Array<{ id: string; createdAt: string; updatedAt: string }> =
         [];
-      try {
-        const content = await fs.readFile(filePath, "utf8");
-        const lines = content.trim().split("\n");
-        for (let i = lines.length - 1; i >= 0 && result.length < 50; i--) {
-          const obj = JSON.parse(lines[i]);
-          result.push({
-            id: obj.id,
-            createdAt: obj.createdAt,
-            updatedAt: obj.updatedAt,
-          });
+
+      for (const dir of possiblePaths) {
+        const filePath = path.join(dir, "submissions.jsonl");
+        try {
+          const content = await fs.readFile(filePath, "utf8");
+          const lines = content.trim().split("\n");
+          for (let i = lines.length - 1; i >= 0 && result.length < 50; i--) {
+            try {
+              const obj = JSON.parse(lines[i]);
+              result.push({
+                id: obj.id,
+                createdAt: obj.createdAt,
+                updatedAt: obj.updatedAt,
+              });
+            } catch (e) {
+              // Skip invalid JSON lines
+            }
+          }
+          // If we found a file and read it, stop looking
+          if (content) break;
+        } catch {
+          continue;
         }
-      } catch {
-        result = [];
       }
+
       return res.json({ status: "success", data: result });
     }
   } catch (err) {
@@ -145,9 +195,20 @@ export const listJadwalSubmissions = async (
           } => v !== null,
         );
       return res.json({ status: "success", data: mapped });
-    } catch {
-      const dataDir = path.resolve(process.cwd(), "data");
-      const filePath = path.join(dataDir, "submissions.jsonl");
+    } catch (dbError) {
+      console.warn(
+        "Database listJadwal failed, falling back to file system",
+        dbError,
+      );
+
+      // Try multiple possible paths for the data directory
+      const possiblePaths = [
+        path.resolve(process.cwd(), "data"),
+        path.resolve(process.cwd(), "server", "data"),
+        path.resolve(__dirname, "../../data"),
+        path.resolve(__dirname, "../../../data"),
+      ];
+
       let result: Array<{
         id: string;
         name: string | null;
@@ -156,39 +217,50 @@ export const listJadwalSubmissions = async (
         createdAt: string;
         updatedAt: string;
       }> = [];
-      try {
-        const content = await fs.readFile(filePath, "utf8");
-        const lines = content.trim().split("\n");
-        for (let i = lines.length - 1; i >= 0 && result.length < 50; i--) {
-          const obj = JSON.parse(lines[i]) as {
-            id: string;
-            createdAt: string;
-            updatedAt: string;
-            data?: {
-              type?: string;
-              name?: string;
-              year?: number;
-              month?: number;
-            };
-          };
-          if (!obj.data || obj.data.type !== "jadwal") {
-            continue;
+
+      for (const dir of possiblePaths) {
+        const filePath = path.join(dir, "submissions.jsonl");
+        try {
+          const content = await fs.readFile(filePath, "utf8");
+          const lines = content.trim().split("\n");
+          for (let i = lines.length - 1; i >= 0 && result.length < 50; i--) {
+            try {
+              const obj = JSON.parse(lines[i]) as {
+                id: string;
+                createdAt: string;
+                updatedAt: string;
+                data?: {
+                  type?: string;
+                  name?: string;
+                  year?: number;
+                  month?: number;
+                };
+              };
+              if (!obj.data || obj.data.type !== "jadwal") {
+                continue;
+              }
+              result.push({
+                id: obj.id,
+                name:
+                  obj.data.name && typeof obj.data.name === "string"
+                    ? obj.data.name
+                    : null,
+                year: typeof obj.data.year === "number" ? obj.data.year : null,
+                month:
+                  typeof obj.data.month === "number" ? obj.data.month : null,
+                createdAt: obj.createdAt,
+                updatedAt: obj.updatedAt,
+              });
+            } catch (e) {
+              // Skip invalid lines
+            }
           }
-          result.push({
-            id: obj.id,
-            name:
-              obj.data.name && typeof obj.data.name === "string"
-                ? obj.data.name
-                : null,
-            year: typeof obj.data.year === "number" ? obj.data.year : null,
-            month: typeof obj.data.month === "number" ? obj.data.month : null,
-            createdAt: obj.createdAt,
-            updatedAt: obj.updatedAt,
-          });
+          if (content) break;
+        } catch {
+          continue;
         }
-      } catch {
-        result = [];
       }
+
       return res.json({ status: "success", data: result });
     }
   } catch (err) {
