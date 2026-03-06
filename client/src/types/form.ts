@@ -41,7 +41,12 @@ export interface LampiranItem {
 export interface Step3Data {
   nama: string;
   createdDate: string;
-  approvedDate: string;
+  statusApproval:
+    | "Draft - Approval Required"
+    | "Draft - Approval Pending"
+    | "Draft - Approval Withdrawn"
+    | "Draft - Approved"
+    | "";
   projectType: "Baseline" | "Non-Baseline" | "";
   lampiran?: Record<string, LampiranItem>;
   tkdn?: Record<string, LampiranItem>;
@@ -52,7 +57,9 @@ export interface Step4Data {
   judulPaket: string;
   penggunaBarangJasa: "GM" | "GH" | "DH" | "Others" | "";
   picPenggunaBarangJasa: string;
+  picPenggunaBarangJasaEmail?: string;
   penggunaBarangJasaNotes: string;
+  additionalPics?: { name: string; email?: string }[];
   generalDocuments?: Record<string, LampiranItem>;
 }
 
@@ -190,7 +197,7 @@ export const INITIAL_DATA: FormData = {
   step3: {
     nama: "",
     createdDate: "",
-    approvedDate: "",
+    statusApproval: "",
     projectType: "",
     lampiran: {
       formulirRequest: {
@@ -289,7 +296,9 @@ export const INITIAL_DATA: FormData = {
     judulPaket: "",
     penggunaBarangJasa: "",
     picPenggunaBarangJasa: "",
+    picPenggunaBarangJasaEmail: "",
     penggunaBarangJasaNotes: "",
+    additionalPics: [],
     generalDocuments: {
       usulanPenyedia: {
         isActive: false,

@@ -24,7 +24,6 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
   showErrors = false,
 }) => {
   const [nameError, setNameError] = useState<string | null>(null);
-  const [dateError, setDateError] = useState<string | null>(null);
   const [isTouched, setIsTouched] = useState(false);
 
   const isProjectTypeValid = !!data.projectType;
@@ -33,18 +32,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
     const validateStep = () => {
       const isNameValid = (data.nama?.trim().length ?? 0) > 0;
       const isCreatedDateValid = !!data.createdDate;
-      const isApprovedDateValid = !!data.approvedDate;
-      let isDateOrderValid = true;
-      if (data.createdDate && data.approvedDate) {
-        if (new Date(data.approvedDate) < new Date(data.createdDate)) {
-          isDateOrderValid = false;
-          setDateError("Approved Date cannot be before Created Date");
-        } else {
-          setDateError(null);
-        }
-      } else {
-        setDateError(null);
-      }
+      const isStatusValid = !!data.statusApproval;
 
       if (!data.nama || data.nama.trim().length === 0) {
         if (isTouched || showErrors) setNameError("This field is required");
@@ -68,8 +56,7 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
       onValidityChange(
         isNameValid &&
           isCreatedDateValid &&
-          isApprovedDateValid &&
-          isDateOrderValid &&
+          isStatusValid &&
           isProjectTypeValid &&
           isLampiranValid,
       );
@@ -338,18 +325,62 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
               forceTouched={showErrors}
             />
 
-            {/* Approved Date */}
-            <ValidatedInput
-              id="approvedDate"
-              label="Approved Date"
-              type="date"
-              value={data.approvedDate}
-              onChange={(e) => updateData({ approvedDate: e.target.value })}
-              icon={Calendar}
-              required
-              error={dateError}
-              forceTouched={showErrors}
-            />
+            {/* Status Approval */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-slate-700">
+                Status Approval <span className="text-red-500">*</span>
+              </label>
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+                  showErrors && !data.statusApproval
+                    ? "p-2 rounded-xl ring-2 ring-red-100"
+                    : ""
+                }`}
+              >
+                {PROJECT_CONSTANTS.STEP3_CONSTANTS.STATUS_APPROVAL_OPTIONS.map(
+                  (status) => (
+                    <label
+                      key={status}
+                      className={`
+                    flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200
+                    ${
+                      data.statusApproval === status
+                        ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
+                        : "border-slate-200 hover:border-blue-200 hover:bg-slate-50"
+                    }
+                  `}
+                    >
+                      <input
+                        type="radio"
+                        name="statusApproval"
+                        value={status}
+                        checked={data.statusApproval === status}
+                        onChange={(e) =>
+                          updateData({
+                            statusApproval: e.target.value as any,
+                          })
+                        }
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span
+                        className={`text-sm font-medium ${
+                          data.statusApproval === status
+                            ? "text-blue-700"
+                            : "text-slate-600"
+                        }`}
+                      >
+                        {status}
+                      </span>
+                    </label>
+                  ),
+                )}
+              </div>
+              {showErrors && !data.statusApproval && (
+                <p className="text-xs text-red-600 mt-1">
+                  Status Approval is required.
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -974,6 +1005,31 @@ const Step3ProjectRequest: React.FC<Step3Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handlePrMysapUpdate(
+                                  doc.key,
+                                  "tindakLanjut" as any,
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"

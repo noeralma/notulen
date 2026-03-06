@@ -1,6 +1,15 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Type, User, FileText, StickyNote } from "lucide-react";
+import {
+  CheckCircle2,
+  Type,
+  User,
+  FileText,
+  StickyNote,
+  Plus,
+  Trash2,
+  Mail,
+} from "lucide-react";
 import {
   type Step4Data,
   type LampiranItem,
@@ -27,7 +36,9 @@ const Step4General: React.FC<Step4GeneralProps> = ({
     judulPaket,
     penggunaBarangJasa,
     picPenggunaBarangJasa,
+    picPenggunaBarangJasaEmail,
     penggunaBarangJasaNotes,
+    additionalPics,
     generalDocuments,
   } = data;
 
@@ -59,6 +70,30 @@ const Step4General: React.FC<Step4GeneralProps> = ({
     onValidityChange,
     isPenggunaValid,
   ]);
+
+  const handleAddPic = () => {
+    const currentPics = data.additionalPics || [];
+    updateData({
+      additionalPics: [...currentPics, { name: "", email: "" }],
+    });
+  };
+
+  const handleRemovePic = (index: number) => {
+    const currentPics = data.additionalPics || [];
+    const newPics = currentPics.filter((_, i) => i !== index);
+    updateData({ additionalPics: newPics });
+  };
+
+  const handlePicChange = (
+    index: number,
+    field: "name" | "email",
+    value: string,
+  ) => {
+    const currentPics = data.additionalPics || [];
+    const newPics = [...currentPics];
+    newPics[index] = { ...newPics[index], [field]: value };
+    updateData({ additionalPics: newPics });
+  };
 
   const handleChange = (field: keyof Step4Data, value: string) => {
     updateData({ [field]: value });
@@ -240,17 +275,96 @@ const Step4General: React.FC<Step4GeneralProps> = ({
           </div>
 
           {/* PIC Pengguna Barang/Jasa */}
-          <ValidatedInput
-            label="PIC Pengguna Barang/Jasa"
-            value={picPenggunaBarangJasa}
-            onChange={(e) =>
-              handleChange("picPenggunaBarangJasa", e.target.value)
-            }
-            placeholder="Masukkan Nama PIC"
-            icon={User}
-            required
-            forceTouched={showErrors}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ValidatedInput
+              label="PIC Pengguna Barang/Jasa"
+              value={picPenggunaBarangJasa}
+              onChange={(e) =>
+                handleChange("picPenggunaBarangJasa", e.target.value)
+              }
+              placeholder="Masukkan Nama PIC"
+              icon={User}
+              required
+              forceTouched={showErrors}
+            />
+            <ValidatedInput
+              label="Email PIC (Optional)"
+              value={picPenggunaBarangJasaEmail || ""}
+              onChange={(e) =>
+                handleChange("picPenggunaBarangJasaEmail", e.target.value)
+              }
+              placeholder="Masukkan Email PIC"
+              type="email"
+              icon={Mail}
+            />
+          </div>
+
+          {/* Additional PICs */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-slate-700">
+                Additional PICs (Optional)
+              </label>
+              <button
+                type="button"
+                onClick={handleAddPic}
+                className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add PIC
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <AnimatePresence>
+                {additionalPics?.map((pic, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex gap-3 items-start mb-3">
+                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <ValidatedInput
+                          value={pic.name}
+                          onChange={(e) =>
+                            handlePicChange(index, "name", e.target.value)
+                          }
+                          placeholder="Name"
+                          icon={User}
+                        />
+                        <ValidatedInput
+                          value={pic.email || ""}
+                          onChange={(e) =>
+                            handlePicChange(index, "email", e.target.value)
+                          }
+                          placeholder="Email (Optional)"
+                          type="email"
+                          icon={Mail}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePic(index)}
+                        className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100"
+                        title="Remove PIC"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {(!additionalPics || additionalPics.length === 0) && (
+                <div className="text-sm text-slate-400 italic px-2 bg-slate-50 p-3 rounded-lg border border-dashed border-slate-200 text-center">
+                  No additional PICs added. Click "Add PIC" to include more
+                  people.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* General Documents Section */}
@@ -347,9 +461,7 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                             </span>
                             <div
                               className={`flex gap-4 ${
-                                showErrors &&
-                                item.isActive &&
-                                !item.existence
+                                showErrors && item.isActive && !item.existence
                                   ? "ring-2 ring-red-400 rounded-xl p-2"
                                   : ""
                               }`}
@@ -392,9 +504,7 @@ const Step4General: React.FC<Step4GeneralProps> = ({
                             </span>
                             <div
                               className={`flex gap-4 ${
-                                showErrors &&
-                                item.isActive &&
-                                !item.suitability
+                                showErrors && item.isActive && !item.suitability
                                   ? "ring-2 ring-red-400 rounded-xl p-2"
                                   : ""
                               }`}

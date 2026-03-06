@@ -163,8 +163,8 @@ const Step20ReviewSubmission: React.FC<Step20Props> = ({
         value: formData.step3.createdDate || "-",
       },
       {
-        label: "Tanggal Persetujuan DP3",
-        value: formData.step3.approvedDate || "-",
+        label: "Status Approval",
+        value: formData.step3.statusApproval || "-",
       },
       {
         label: "Project Type",
@@ -174,8 +174,8 @@ const Step20ReviewSubmission: React.FC<Step20Props> = ({
     [formData.step3],
   );
 
-  const step4Summary = useMemo(
-    () => [
+  const step4Summary = useMemo(() => {
+    const summary = [
       { label: "Judul Paket", value: formData.step4.judulPaket || "-" },
       {
         label: "Pengguna Barang/Jasa",
@@ -183,15 +183,36 @@ const Step20ReviewSubmission: React.FC<Step20Props> = ({
       },
       {
         label: "PIC Pengguna Barang/Jasa",
-        value: formData.step4.picPenggunaBarangJasa || "-",
+        value: formData.step4.picPenggunaBarangJasa
+          ? `${formData.step4.picPenggunaBarangJasa}${
+              formData.step4.picPenggunaBarangJasaEmail
+                ? ` - ${formData.step4.picPenggunaBarangJasaEmail}`
+                : ""
+            }`
+          : "-",
       },
       {
         label: "Catatan Pengguna Barang/Jasa",
         value: formData.step4.penggunaBarangJasaNotes || "-",
       },
-    ],
-    [formData.step4],
-  );
+    ];
+
+    if (
+      formData.step4.additionalPics &&
+      formData.step4.additionalPics.length > 0
+    ) {
+      formData.step4.additionalPics.forEach((pic, index) => {
+        let val = pic.name;
+        if (pic.email) val += ` - ${pic.email}`;
+        summary.push({
+          label: `Additional PIC ${index + 1}`,
+          value: val,
+        });
+      });
+    }
+
+    return summary;
+  }, [formData.step4]);
 
   const step11Summary = useMemo(
     () => [

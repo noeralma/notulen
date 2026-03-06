@@ -21,6 +21,14 @@ export const PROJECT_CONSTANTS = {
   STEP3_TEXT: {
     TITLE: "PERMINTAAN PENGADAAN",
   },
+  STEP3_CONSTANTS: {
+    STATUS_APPROVAL_OPTIONS: [
+      "Draft - Approval Required",
+      "Draft - Approval Pending",
+      "Draft - Approval Withdrawn",
+      "Draft - Approved",
+    ] as const,
+  },
   STEP4_TEXT: {
     TITLE: "UMUM",
   },

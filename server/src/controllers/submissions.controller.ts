@@ -41,7 +41,7 @@ export const createSubmission = async (
         updatedAt: new Date().toISOString(),
         data: payload,
       };
-      const dataDir = path.resolve(process.cwd(), "server", "data");
+      const dataDir = path.resolve(process.cwd(), "data");
       const filePath = path.join(dataDir, "submissions.jsonl");
       await fs.mkdir(dataDir, { recursive: true });
       await fs.appendFile(filePath, JSON.stringify(record) + "\n", "utf8");
@@ -75,7 +75,7 @@ export const listSubmissions = async (
       });
       return res.json({ status: "success", data: items });
     } catch {
-      const dataDir = path.resolve(process.cwd(), "server", "data");
+      const dataDir = path.resolve(process.cwd(), "data");
       const filePath = path.join(dataDir, "submissions.jsonl");
       let result: Array<{ id: string; createdAt: string; updatedAt: string }> =
         [];
@@ -132,17 +132,21 @@ export const listJadwalSubmissions = async (
             updatedAt: item.updatedAt,
           };
         })
-        .filter((v): v is {
-          id: string;
-          name: string | null;
-          year: number | null;
-          month: number | null;
-          createdAt: Date;
-          updatedAt: Date;
-        } => v !== null);
+        .filter(
+          (
+            v,
+          ): v is {
+            id: string;
+            name: string | null;
+            year: number | null;
+            month: number | null;
+            createdAt: Date;
+            updatedAt: Date;
+          } => v !== null,
+        );
       return res.json({ status: "success", data: mapped });
     } catch {
-      const dataDir = path.resolve(process.cwd(), "server", "data");
+      const dataDir = path.resolve(process.cwd(), "data");
       const filePath = path.join(dataDir, "submissions.jsonl");
       let result: Array<{
         id: string;
@@ -176,10 +180,8 @@ export const listJadwalSubmissions = async (
               obj.data.name && typeof obj.data.name === "string"
                 ? obj.data.name
                 : null,
-            year:
-              typeof obj.data.year === "number" ? obj.data.year : null,
-            month:
-              typeof obj.data.month === "number" ? obj.data.month : null,
+            year: typeof obj.data.year === "number" ? obj.data.year : null,
+            month: typeof obj.data.month === "number" ? obj.data.month : null,
             createdAt: obj.createdAt,
             updatedAt: obj.updatedAt,
           });
@@ -202,35 +204,50 @@ export const getSubmissionById = async (
   try {
     const { id } = req.params;
     const idParam = Array.isArray(id) ? id[0] : id;
+
+    // Try fetching from DB first
     try {
       const { default: prisma } = await import("../utils/prisma");
       const item = await prisma.submission.findUnique({
         where: { id: idParam },
       });
-      if (!item) {
-        return res.status(404).json({ status: "error", message: "Not found" });
+      if (item) {
+        return res.json({ status: "success", data: item });
       }
-      return res.json({ status: "success", data: item });
-    } catch {
-      const dataDir = path.resolve(process.cwd(), "server", "data");
-      const filePath = path.join(dataDir, "submissions.jsonl");
-      let content = "";
+    } catch (error) {
+      // Continue to fallback if DB fails
+      console.warn("Database fetch failed, falling back to file system");
+    }
+
+    // Fallback to file system if not found in DB or DB error
+    // Try multiple possible paths for the data directory
+    const possiblePaths = [
+      path.resolve(process.cwd(), "data"),
+      path.resolve(process.cwd(), "server", "data"),
+      path.resolve(__dirname, "../../data"),
+      path.resolve(__dirname, "../../../data"),
+    ];
+
+    let content = "";
+    for (const dir of possiblePaths) {
+      const filePath = path.join(dir, "submissions.jsonl");
       try {
         content = await fs.readFile(filePath, "utf8");
+        if (content) break;
       } catch {
-        content = "";
+        continue;
       }
-      if (content) {
-        const lines = content.trim().split("\n");
-        for (let i = lines.length - 1; i >= 0; i--) {
-          const obj = JSON.parse(lines[i]);
-          if (obj.id === idParam) {
-            return res.json({ status: "success", data: obj });
-          }
+    }
+    if (content) {
+      const lines = content.trim().split("\n");
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const obj = JSON.parse(lines[i]);
+        if (obj.id === idParam) {
+          return res.json({ status: "success", data: obj });
         }
       }
-      return res.status(404).json({ status: "error", message: "Not found" });
     }
+    return res.status(404).json({ status: "error", message: "Not found" });
   } catch (err) {
     next(err);
   }
