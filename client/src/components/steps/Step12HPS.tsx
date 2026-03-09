@@ -100,29 +100,55 @@ const Step12HPS: React.FC<Step12Props> = ({
   };
 
   const getKeabsahanStatus = (k: KeabsahanHpsData) => {
-    if (!k.isActive) return "";
-    const isAngkaValid =
-      !!k.angkaDanPenyebutan.existence && !!k.angkaDanPenyebutan.suitability;
-    const isDasarValid = !!k.dasarPembuatan?.trim();
-    const isPenandatanganValid = !!k.penandatangan?.trim();
-    const isNilaiValid = !!k.nilaiHps;
-    const isMataUangValid =
-      !!k.mataUang && (k.mataUang !== "Other" || !!k.mataUangOther?.trim());
+    if (!k.isActive) {
+      if (
+        k.angkaDanPenyebutan.existence === "Tidak Ada" &&
+        k.angkaDanPenyebutan.suitability === "Sesuai"
+      ) {
+        return "Closed";
+      }
+      return "ERROR";
+    }
+
+    const hasAngkaExistence = !!k.angkaDanPenyebutan.existence;
+    const hasAngkaSuitability = !!k.angkaDanPenyebutan.suitability;
+    const hasDasar = !!k.dasarPembuatan?.trim();
+    const hasPenandatangan = !!k.penandatangan?.trim();
+    const hasNilai = !!k.nilaiHps;
+    const hasMataUang = !!k.mataUang;
+    const hasMataUangOther =
+      k.mataUang === "Other" ? !!k.mataUangOther?.trim() : true;
 
     if (
-      isAngkaValid &&
-      isDasarValid &&
-      isPenandatanganValid &&
-      isNilaiValid &&
-      isMataUangValid
-    )
-      return "Closed";
+      !hasAngkaExistence ||
+      !hasAngkaSuitability ||
+      !hasDasar ||
+      !hasPenandatangan ||
+      !hasNilai ||
+      !hasMataUang ||
+      !hasMataUangOther
+    ) {
+      return "";
+    }
+
+    if (
+      k.angkaDanPenyebutan.existence === "Tidak Ada" &&
+      k.angkaDanPenyebutan.suitability === "Sesuai"
+    ) {
+      return "ERROR";
+    }
+
+    const isAngkaClosed =
+      k.angkaDanPenyebutan.existence === "Ada" &&
+      k.angkaDanPenyebutan.suitability === "Sesuai";
+
+    if (isAngkaClosed) return "Closed";
     return "Open";
   };
 
   const handleDocumentUpdate = (
     key: string,
-    field: "existence" | "suitability" | "catatan",
+    field: "existence" | "suitability" | "catatan" | "tindakLanjut",
     value: string,
   ) => {
     const currentDocs = data.hpsDocuments || INITIAL_DATA.step12.hpsDocuments;
@@ -160,10 +186,17 @@ const Step12HPS: React.FC<Step12Props> = ({
 
   const handleKeabsahanToggle = () => {
     const current = data.keabsahanHps || INITIAL_DATA.step12.keabsahanHps;
+    const newIsActive = !current.isActive;
+
     updateData({
       keabsahanHps: {
         ...current,
-        isActive: !current.isActive,
+        isActive: newIsActive,
+        angkaDanPenyebutan: {
+          ...current.angkaDanPenyebutan,
+          existence: newIsActive ? null : "Tidak Ada",
+          suitability: newIsActive ? null : "Sesuai",
+        },
       },
     });
   };
@@ -378,6 +411,31 @@ const Step12HPS: React.FC<Step12Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handleDocumentUpdate(
+                                  doc.key,
+                                  "tindakLanjut",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <RichTextNote
                             id={`${doc.key}-catatan`}
                             label="Catatan"
@@ -925,6 +983,31 @@ const Step12HPS: React.FC<Step12Props> = ({
                         </div>
 
                         <div className="pl-9 pt-4">
+                          <div className="space-y-2 mb-4">
+                            <span className="text-sm font-medium text-slate-600">
+                              Tindak Lanjut
+                            </span>
+                            <select
+                              value={item.tindakLanjut || ""}
+                              onChange={(e) =>
+                                handleDocumentUpdate(
+                                  doc.key,
+                                  "tindakLanjut",
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                              <option value="">Pilih Tindak Lanjut...</option>
+                              {PROJECT_CONSTANTS.TINDAK_LANJUT_OPTIONS.map(
+                                (option) => (
+                                  <option key={option} value={option}>
+                                    {option}
+                                  </option>
+                                ),
+                              )}
+                            </select>
+                          </div>
                           <RichTextNote
                             id={`${doc.key}-catatan-bottom`}
                             label="Catatan"
